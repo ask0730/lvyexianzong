@@ -1,0 +1,77 @@
+1.二次封装axios，实现请求和响应拦截
+https://blog.csdn.net/qq_45020145/article/details/139617336
+
+流程：
+1.npm安装，引入axios库
+2.axios.create()创建实例，配置环境变量，超时时间
+3.请求拦截器instance.interceptors.request.use(config => { ... });
+4.localStorage.getItem('token')读取token令牌
+5.添加到请求头的`Authorization`字段中
+6.响应拦截器
+7.解构赋值autourization,如果存在则将其存储到`localStorage`中
+8.失败响应且状态码为401时，清除令牌并重定向用户到登录页面
+9.封装get和post,return instance.get
+
+环境变量具体怎么配置：env.production
+
+withCredentials:携带用户凭证。Access-Control-Allow-Credentials为true，以允许跨域请求携带凭证
+
+箭头函数()=>{}
+
+npm和pnpm 的区别：performant，内容寻址存储，零安装技术，npm安装pnpm，符号链接，依赖共享节约磁盘空间，自创依赖管理和扁平依赖树，锁文件json和yaml,monorepo，符号链接，硬链接安装，ci/cd管道节约时间
+
+状态码:
+https://blog.csdn.net/weixin_47053306/article/details/108017911
+100继续，101换协议，200成功，201创建新资源，202处理未完成，230返回副本，204未返回新内容，205重置，206处理部分请求，200 - 请求成功
+301 - 资源（网页等）被永久转移到其他URL
+404 - 请求的资源（网页等）不存在
+500 - 内部服务器错误
+
+bearer前缀： `Bearer`是认证方案的名称，表示接下来的令牌是一个被授权的令牌，可以用来访问受保护的资源。`${token}`是一个占位符，它将被实际的访问令牌字符串所替换。这样的格式使得客户端在每次请求受保护资源时，都可以通过请求头将令牌传递给服务器，服务器接收到请求后会验证令牌的有效性，以决定是否允许访问.
+
+token的存储：
+https://juejin.cn/post/7405158247584301056
+
+解构赋值：
+const { authorization } = response.headers
+const headers = response.headers;
+const authorization = headers.authorization;
+
+url: 这是一个字符串，代表你想要请求的API的URL。
+params: 这是一个对象，包含了你想要作为查询参数附加到URL上的键值对。例如，如果你想要查询某用户的信息，params可能包含{userId: 123}。
+config: 这是一个任意类型的对象，可以用来配置请求的其他方面，比如设置超时时间、添加请求头等。
+data: 这是一个任意类型的对象，包含了你想要发送给服务器的数据。与GET请求不同，POST请求中的数据不会被附加到URL上，而是作为请求体的一部分发送。
+
+axios是什么
+axios是一个基于Promise的HTTP客户端，用于浏览器和Node.js。它允许开发者以简洁的方式发送异步请求到服务器。
+
+将token存储在localStorage中的风险？ 主要风险是跨站脚本攻击（XSS），攻击者可以窃取localStorage中的数据。减轻风险的方法包括使用内容安全策略（CSP）和避免在客户端存储敏感信息。
+
+在不安全网络环境中保护token？ 
+可以使用HTTPS来加密通信，防止中间人攻击。此外，应避免在URL中传递token，因为这可能会被浏览器历史记录保存。
+
+其他认证和授权方法？ 
+除了token，还有OAuth、OpenID Connect、基本认证、摘要认证等多种方法。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+1.搜索功能防抖
+https://juejin.cn/post/7156209800714387492
+
+应用场景:
+防抖:搜索框输入，调整页面大小，执行第一次
+节流:滚动事件，鼠标移动事件，执行最后一次
+
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}

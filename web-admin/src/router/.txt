@@ -1,0 +1,37 @@
+1.动态路由按需加载，路由守卫，动态路由守卫，路由权限管理
+router config.ts:
+1.从vue-router导入RouteRecordRaw
+2.定义路由配置数组，const routes: Array<RouteRecordRaw> = []
+router index.ts:
+1.导入动态路由配置
+2.创建Vue Router实例router = createRouter({
+3.history: createWebHashHistory(),hash模式历史记录
+4.routes: constantRoutes, 初始路由配置为常量路由
+5.路由守卫router.beforeEach((to, from, next) => {
+6.const useTool = useToolStore() 获取工具store实例
+7.如果目标路由为login，next()直接放行
+8.检查是否已经登录!localStorage.getItem('token')
+9.next({ path: '/login' })，未登录，跳转到登录页面
+10.!useTool.isGetterRouter检查是否已经加载动态路由
+11.ConfigRouter(); // 如果动态路由未加载，则加载动态路由
+12.next({ path: to.fullPath }); // 重新跳转到当前路由
+13.next(); // 如果动态路由已加载，则直接放行
+14.动态路由const ConfigRouter = () => {
+15. 获取工具store实例
+16.遍历动态路由配置并添加到路由实例中dynamicRoutes.forEach(item => {
+17.检查权限checkPermission(item) && router.addRoute('mainbox', item);
+18.useTool.changeGetterRouter(true)表示动态路由已加载
+19.权限检查函数const checkPermission = (item: any) => {
+20.获取工具store实例
+21.如果路由需要管理员权限，则检查用户角色item.meta?.requireAdmin
+22. 应用注册函数export const setupRouter = (app: App<Element>) => {
+23. app.use(router); // 使用Vue Router
+
+通配符路由，用于处理未匹配到的路径，组件为404.vue:
+path: '/:pathMatch(.*)*',
+
+路由模式：
+https://blog.csdn.net/weixin_44917334/article/details/129387658
+
+元素滚动：
+https://blog.csdn.net/muzidigbig/article/details/131709194
