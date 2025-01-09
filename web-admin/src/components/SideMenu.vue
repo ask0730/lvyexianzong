@@ -1,6 +1,14 @@
 <template>
   <el-aside :width="useTool.isCollapsed ? '64px' : '220px'">
-    <el-menu active-text-color="#ffffff" background-color="#001529" text-color="#bfcbd9" :collapse="useTool.isCollapsed" :collapse-transition="false" :router="true" :default-active="route.fullPath">
+    <el-menu 
+      active-text-color="#ffffff" 
+      :background-color="'var(--el-color-primary)'" 
+      text-color="#ffffff" 
+      :collapse="useTool.isCollapsed" 
+      :collapse-transition="false" 
+      :router="true" 
+      :default-active="route.fullPath"
+    >
       <el-menu-item index="/index">
         <el-icon><home-filled /></el-icon>
         <span>首页</span>
@@ -60,20 +68,39 @@ const route = useRoute();
 
   .el-menu {
     height: 100vh;
+    border-right: none;
+
     .el-menu-item.is-active {
-      background-color: #1a5276;
+      background-color: var(--el-color-primary-dark-2) !important;
       &:hover {
-        background-color: #1a5276;
-        color: #ffffff;
+        background-color: var(--el-color-primary-dark-2) !important;
       }
     }
+
     .el-menu-item:hover {
-      background-color: transparent;
-      color: #ffffff;
+      background-color: var(--el-color-primary-light-3) !important;
     }
-    :deep(.el-sub-menu) .el-sub-menu__title:hover {
-      background-color: transparent !important;
-      color: #ffffff;
+
+    :deep(.el-sub-menu) {
+      .el-sub-menu__title:hover {
+        background-color: var(--el-color-primary-light-3) !important;
+      }
+      
+      .el-menu {
+        background-color: var(--el-color-primary-light-5) !important;
+        
+        .el-menu-item {
+          background-color: var(--el-color-primary-light-5) !important;
+          
+          &:hover {
+            background-color: var(--el-color-primary-light-3) !important;
+          }
+          
+          &.is-active {
+            background-color: var(--el-color-primary-dark-2) !important;
+          }
+        }
+      }
     }
   }
 }
