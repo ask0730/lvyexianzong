@@ -3,6 +3,7 @@ import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import 'normalize.css';
 import './styles/index.scss';
+import './styles/element-plus-theme.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { setupStore } from './store';
 import router, { setupRouter } from './router';

@@ -1,0 +1,20 @@
+:root {
+  --el-color-primary: #67c23a;        /* 主要绿色 */
+  --el-color-primary-light-3: #95d475; /* 浅绿色 30% */
+  --el-color-primary-light-5: #b3e19d; /* 浅绿色 50% */
+  --el-color-primary-light-7: #d1edc4; /* 浅绿色 70% */
+  --el-color-primary-light-8: #e1f3d8; /* 浅绿色 80% */
+  --el-color-primary-light-9: #f0f9eb; /* 浅绿色 90% */
+  --el-color-primary-dark-2: #529b2e;  /* 深绿色 20% */
+}
+
+/* 暗色主题的绿色系 */
+html.dark {
+  --el-color-primary: #67c23a;
+  --el-color-primary-light-3: #95d475;
+  --el-color-primary-light-5: #b3e19d;
+  --el-color-primary-light-7: #d1edc4;
+  --el-color-primary-light-8: #e1f3d8;
+  --el-color-primary-light-9: #f0f9eb;
+  --el-color-primary-dark-2: #529b2e;
+} 
