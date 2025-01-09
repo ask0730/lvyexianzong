@@ -11,7 +11,7 @@
         <div :style="{ backgroundImage: `url(${img3})` }"></div>
       </el-carousel-item>
     </el-carousel>
-    <div class="center">互联网+时代</div>
+    <div class="center">绿野仙踪</div>
   </div>
 </template>
 
