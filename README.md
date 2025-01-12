@@ -4,7 +4,7 @@ vue3-node full stack project
 
 ## web-admin
 
-vue3 + ts + elementplus + pinia 后台管理系统
+vue3 + ts + elementplus + pinia 管理系统系统
 
 ![](admin.png)
 
