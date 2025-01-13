@@ -1,11 +1,11 @@
 <template>
     <div class="navbar">
         <el-menu :default-active="route.fullPath" class="el-menu-demo" mode="horizontal" :router="true">
-            <el-menu-item index="/">首页</el-menu-item>
-            <el-menu-item index="/news">新闻中心</el-menu-item>
+            <!-- <el-menu-item index="/">首页</el-menu-item> -->
+            <el-menu-item index="/news">首页</el-menu-item>
             <el-menu-item index="/product">产品与服务</el-menu-item>
         </el-menu>
-        <div class="right">绿野仙踪管理系统</div>
+        <div class="right">绿野仙踪官网</div>
     </div>
 </template>
 

@@ -1,11 +1,16 @@
 <template>
   <div class="container">
-    <div
-      class="news-header"
-      :style="{
-        backgroundImage: `url(${bg})`,
-      }"></div>
-
+    <el-carousel
+        height="400px"
+        class="news-carousel"
+        :interval="3000"
+        :autoplay="true"
+        indicator-position="outside"
+    >
+      <el-carousel-item v-for="item in carouselImages" :key="item">
+        <img :src="item" class="carousel-image" />
+      </el-carousel-item>
+    </el-carousel>
     <div class="search">
       <el-popover placement="bottom" title="检索结果" width="50%" :visible="visible">
         <template #reference>
@@ -119,6 +124,12 @@ const router = useRouter();
 const handleChangepage = (id: number) => {
   router.push(`/news/${id}`);
 };
+
+const carouselImages = ref([
+  '/src/assets/news/banner1.jpg',
+  '/src/assets/news/banner2.jpg',
+  '/src/assets/news/banner3.jpg',
+])
 </script>
 
 <style scoped lang="scss">
@@ -173,6 +184,16 @@ const handleChangepage = (id: number) => {
 .tab-time {
   font-size: 13px;
   color: gray;
+}
+
+.news-carousel {
+  width: 100%;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
 
