@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="login-wrapper">
         <vue-particles id="tsparticles" @particles-loaded="particlesLoaded" :options="options" />
         <div class="formContainer">
             <h3>绿野仙踪管理系统</h3>
@@ -29,7 +29,7 @@ const useTool = useToolStore()
 const options = {
     background: {
         color: {
-            value: '#778899',
+            value: 'transparent',
         },
     },
     fpsLimit: 120,
@@ -125,6 +125,20 @@ const submitForm = () => {
 </script>
 
 <style lang="scss" scoped>
+.login-wrapper {
+    width: 100%;
+    height: 100vh;
+    background-color: var(--el-color-primary);
+}
+
+#tsparticles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
 .formContainer {
     width: 500px;
     height: 300px;
