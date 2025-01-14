@@ -1,17 +1,19 @@
 <template>
     <div class="login-wrapper">
         <vue-particles id="tsparticles" @particles-loaded="particlesLoaded" :options="options" />
-        <div class="formContainer">
-            <h3>绿野仙踪管理系统</h3>
+        <div class="formContainer animate__animated animate__fadeIn">
+            <h3 class="animate__animated animate__slideInDown">绿野仙踪管理系统</h3>
             <el-form ref="loginFormRef" :model="loginForm" status-icon :rules="loginRules" label-width="80px" class="loginform">
-                <el-form-item label="用户名" prop="username">
+                <el-form-item label="用户名" prop="username" class="animate__animated animate__fadeInLeft animate__delay-1s">
                     <el-input v-model="loginForm.username" autocomplete="off" />
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
+                <el-form-item label="密码" prop="password" class="animate__animated animate__fadeInLeft animate__delay-1s">
                     <el-input v-model="loginForm.password" type="password" autocomplete="off" />
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm()" class="login-btn">登录</el-button>
+                <el-form-item class="animate__animated animate__fadeInUp animate__delay-2s">
+                    <el-button type="primary" @click="submitForm()" class="login-btn" :loading="loading">
+                        {{ loading ? '登录中...' : '登录' }}
+                    </el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -108,16 +110,22 @@ const loginRules = reactive({
 })
 const router = useRouter()
 
+const loading = ref(false)
+
 const submitForm = () => {
     loginFormRef.value.validate(async (valid) => {
         if (valid) {
-            const res = await API.user.login(loginForm)
-            if (res.code === 0) {
-                // localStorage.setItem('token', 'token');
-                useTool.changeUserInfo(res.data)
-                router.push('/index')
-            } else {
-                ElMessage.error(`${res.msg}`)
+            loading.value = true
+            try {
+                const res = await API.user.login(loginForm)
+                if (res.code === 0) {
+                    useTool.changeUserInfo(res.data)
+                    router.push('/index')
+                } else {
+                    ElMessage.error(`${res.msg}`)
+                }
+            } finally {
+                loading.value = false
             }
         }
     })
@@ -125,6 +133,8 @@ const submitForm = () => {
 </script>
 
 <style lang="scss" scoped>
+@import 'animate.css';
+
 .login-wrapper {
     width: 100%;
     min-height: 100vh;
@@ -134,14 +144,26 @@ const submitForm = () => {
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        animation: rotate 20s linear infinite;
+    }
 }
 
-#tsparticles {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .formContainer {
@@ -155,10 +177,20 @@ const submitForm = () => {
     padding: 20px;
     border-radius: 5px;
     box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
 
     h3 {
         font-size: clamp(24px, 5vw, 30px);
         margin-bottom: 20px;
+        background: linear-gradient(45deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: titleGlow 2s ease-in-out infinite alternate;
     }
 
     .loginform {
@@ -176,7 +208,26 @@ const submitForm = () => {
             width: 100%;
             height: 40px;
             font-size: 16px;
+            transition: all 0.3s ease;
+            
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }
+            
+            &:active {
+                transform: scale(0.95);
+            }
         }
+    }
+}
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 0 0 5px rgba(255,255,255,0.5);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(255,255,255,0.8);
     }
 }
 
@@ -217,6 +268,16 @@ const submitForm = () => {
         .loginform {
             margin-top: 15px;
         }
+    }
+}
+
+// 添加输入框动画
+:deep(.el-input__inner) {
+    transition: all 0.3s ease;
+    
+    &:focus {
+        transform: translateX(5px);
+        box-shadow: -5px 0 10px rgba(0,0,0,0.1);
     }
 }
 </style>
