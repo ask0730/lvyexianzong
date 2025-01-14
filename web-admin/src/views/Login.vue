@@ -11,7 +11,7 @@
                     <el-input v-model="loginForm.password" type="password" autocomplete="off" />
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="submitForm()">登录</el-button>
+                    <el-button type="primary" @click="submitForm()" class="login-btn">登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -127,12 +127,17 @@ const submitForm = () => {
 <style lang="scss" scoped>
 .login-wrapper {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--el-color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 #tsparticles {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
@@ -140,27 +145,78 @@ const submitForm = () => {
 }
 
 .formContainer {
-    width: 500px;
-    height: 300px;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    min-height: 300px;
+    position: relative;
     background: rgba($color: #000000, $alpha: 0.5);
     color: white;
     text-align: center;
     padding: 20px;
     border-radius: 5px;
+    box-sizing: border-box;
 
     h3 {
-        font-size: 30px;
+        font-size: clamp(24px, 5vw, 30px);
+        margin-bottom: 20px;
     }
+
     .loginform {
         margin-top: 20px;
+        
+        :deep(.el-form-item) {
+            margin-bottom: 25px;
+        }
+
+        :deep(.el-input) {
+            width: 100%;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 40px;
+            font-size: 16px;
+        }
     }
 }
 
 ::v-deep .el-form-item__label {
     color: white;
+}
+
+// 移动端适配
+@media screen and (max-width: 768px) {
+    .formContainer {
+        padding: 15px;
+        
+        .loginform {
+            :deep(.el-form-item__label) {
+                float: none;
+                display: block;
+                text-align: left;
+                padding: 0 0 10px;
+                line-height: 1;
+            }
+            
+            :deep(.el-form-item__content) {
+                margin-left: 0 !important;
+            }
+        }
+    }
+}
+
+// 超小屏幕适配
+@media screen and (max-width: 320px) {
+    .formContainer {
+        padding: 10px;
+        
+        h3 {
+            margin-bottom: 15px;
+        }
+        
+        .loginform {
+            margin-top: 15px;
+        }
+    }
 }
 </style>
