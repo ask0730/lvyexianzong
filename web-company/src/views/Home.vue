@@ -1,17 +1,22 @@
 <template>
-  <div class="container">
-    <el-carousel height="calc(100vh - 60px)">
-      <el-carousel-item :key="1">
-        <div :style="{ backgroundImage: `url(${img1})` }"></div>
-      </el-carousel-item>
-      <el-carousel-item :key="2">
-        <div :style="{ backgroundImage: `url(${img2})` }"></div>
-      </el-carousel-item>
-      <el-carousel-item :key="3">
-        <div :style="{ backgroundImage: `url(${img3})` }"></div>
-      </el-carousel-item>
-    </el-carousel>
-    <div class="center">绿野仙踪</div>
+  <div class="page-container">
+    <div class="content">
+      <div class="container">
+        <el-carousel height="600px">
+          <el-carousel-item :key="1">
+            <div :style="{ backgroundImage: `url(${img1})` }"></div>
+          </el-carousel-item>
+          <el-carousel-item :key="2">
+            <div :style="{ backgroundImage: `url(${img2})` }"></div>
+          </el-carousel-item>
+          <el-carousel-item :key="3">
+            <div :style="{ backgroundImage: `url(${img3})` }"></div>
+          </el-carousel-item>
+        </el-carousel>
+        <div class="center">绿野仙踪</div>
+      </div>
+    </div>
+    <Footer />
   </div>
 </template>
 
@@ -19,6 +24,7 @@
 import img1 from '@/assets/home1.jpg';
 import img2 from '@/assets/home2.jpg';
 import img3 from '@/assets/home3.jpg';
+import Footer from '@/components/Footer.vue'
 </script>
 
 <style scoped lang="scss">
@@ -41,5 +47,15 @@ import img3 from '@/assets/home3.jpg';
   font-size: 60px;
   color: white;
   text-align: center;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.content {
+  flex: 1 0 auto;
 }
 </style>

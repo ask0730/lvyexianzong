@@ -1,33 +1,39 @@
 <template>
-  <div>
-    <el-carousel height="calc(100vh - 60px)" direction="vertical" :autoplay="false" v-if="looplist.length">
-      <el-carousel-item v-for="item in looplist" :key="item._id">
-        <div class="item" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }">
-          <el-card class="box-card">
-            <template #header>
-              <div class="card-header">
-                <h2>{{ item.title }}</h2>
-              </div>
-            </template>
-            <div>{{ item.introduction }}</div>
-            <div class="detail">{{ item.detail }}</div>
+  <div class="page-container">
+    <div class="content">
+      <div>
+        <el-carousel height="600px" direction="vertical" :autoplay="false" v-if="looplist.length">
+          <el-carousel-item v-for="item in looplist" :key="item._id">
+            <div class="item" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }">
+              <el-card class="box-card">
+                <template #header>
+                  <div class="card-header">
+                    <h2>{{ item.title }}</h2>
+                  </div>
+                </template>
+                <div>{{ item.introduction }}</div>
+                <div class="detail">{{ item.detail }}</div>
 
-            <div class="more">
-              更多信息，请访问：
-              <br />
-              http://localhost:3000
+                <div class="more">
+                  更多信息，请访问：
+                  <br />
+                  http://localhost:3000
+                </div>
+              </el-card>
             </div>
-          </el-card>
-        </div>
-      </el-carousel-item>
-    </el-carousel>
-    <el-empty description="暂无产品" v-else />
+          </el-carousel-item>
+        </el-carousel>
+        <el-empty description="暂无产品" v-else />
+      </div>
+    </div>
+    <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import API from '@/api';
+import Footer from '@/components/Footer.vue'
 
 const looplist: any = ref([]);
 
@@ -56,5 +62,15 @@ onMounted(async () => {
   .more {
     margin-top: 20px;
   }
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.content {
+  flex: 1 0 auto;
 }
 </style>

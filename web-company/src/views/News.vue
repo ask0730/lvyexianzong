@@ -1,108 +1,102 @@
 <template>
-  <div class="container">
-    <el-carousel
-        height="400px"
-        class="news-carousel"
-        :interval="3000"
-        :autoplay="true"
-        indicator-position="outside"
-    >
-      <el-carousel-item v-for="item in carouselImages" :key="item">
-        <img :src="item" class="carousel-image" />
-      </el-carousel-item>
-    </el-carousel>
-    <div class="search">
-      <el-popover placement="bottom" title="检索结果" width="50%" :visible="visible">
-        <template #reference>
-          <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入新闻关键字" :prefix-icon="Search" type="search" size="large" @input="visible = true" @blur="visible = false" />
-        </template>
+  <div class="page-container">
+    <div class="content">
+      <div class="container">
+        <el-carousel height="400px" class="news-carousel" :interval="3000" :autoplay="true" indicator-position="outside">
+          <el-carousel-item v-for="item in carouselImages" :key="item">
+            <img :src="item" class="carousel-image" />
+          </el-carousel-item>
+        </el-carousel>
+        <div class="search">
+          <el-popover placement="bottom" title="检索结果" width="50%" :visible="visible">
+            <template #reference>
+              <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入新闻关键字" :prefix-icon="Search" type="search" size="large" @input="visible = true" @blur="visible = false" />
+            </template>
 
-        <div v-if="searchnewslist.length">
-          <div v-for="data in searchnewslist" :key="data._id" class="search-item" @click="handleChangepage(data._id)">
-            {{ data.title }}
-          </div>
-        </div>
-        <div v-else>
-          <el-empty description="暂无新闻" :image-size="50" />
-        </div>
-      </el-popover>
-    </div>
-    <div class="topnews">
-      <el-row :gutter="20">
-        <el-col :span="6" v-for="item in topNewsList" :key="item._id">
-          <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(item._id)">
-            <div
-              class="image"
-              :style="{
-                backgroundImage: `url(http://localhost:3000${item.cover})`,
-              }"></div>
-            <div style="padding: 14px">
-              <span>{{ item.title }}</span>
-              <div class="bottom">
-                <time class="time">{{ formatTime(item.editTime) }}</time>
-              </div>
+            <div v-if="searchnewslist.length">
+              <div v-for="data in searchnewslist" :key="data._id" class="search-item" @click="handleChangepage(data._id)">{{ data.title }}</div>
             </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
-    <el-tabs style="margin: 20px" v-model="whichTab" class="demo-tabs">
-      <el-tab-pane :key="item.name" v-for="item in tablist" :label="item.label" :name="item.name">
-        <el-row :gutter="20">
-          <el-col :span="18">
-            <div v-for="data in tabnews[item.name]" :key="data._id" style="padding: 10px">
-              <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)">
-                <div
-                  class="tab-image"
-                  :style="{
-                    backgroundImage: `url(http://localhost:3000${data.cover})`,
+            <div v-else>
+              <el-empty description="暂无新闻" :image-size="50" />
+            </div>
+          </el-popover>
+        </div>
+        <div class="topnews">
+          <el-row :gutter="20">
+            <el-col :span="6" v-for="item in topNewsList" :key="item._id">
+              <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(item._id)">
+                <div class="image" :style="{
+                    backgroundImage: `url(http://localhost:3000${item.cover})`,
                   }"></div>
-                <div style="padding: 14px; float: left">
-                  <span>{{ data.title }}</span>
+                <div style="padding: 14px">
+                  <span>{{ item.title }}</span>
                   <div class="bottom">
-                    <time class="tab-time">{{ formatTime(data.editTime) }}</time>
+                    <time class="time">{{ formatTime(item.editTime) }}</time>
                   </div>
                 </div>
               </el-card>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <el-timeline>
-              <el-timeline-item v-for="(data, index) in tabnews[item.name]" :key="index" :timestamp="formatTime(data.editTime)">
-                {{ data.title }}
-              </el-timeline-item>
-            </el-timeline>
-          </el-col>
-        </el-row>
-      </el-tab-pane>
-    </el-tabs>
+            </el-col>
+          </el-row>
+        </div>
+        <el-tabs style="margin: 20px" v-model="whichTab" class="demo-tabs">
+          <el-tab-pane :key="item.name" v-for="item in tablist" :label="item.label" :name="item.name">
+            <el-row :gutter="20">
+              <el-col :span="18">
+                <div v-for="data in tabnews[item.name]" :key="data._id" style="padding: 10px">
+                  <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)">
+                    <div class="tab-image" :style="{
+                        backgroundImage: `url(http://localhost:3000${data.cover})`,
+                      }"></div>
+                    <div style="padding: 14px; float: left">
+                      <span>{{ data.title }}</span>
+                      <div class="bottom">
+                        <time class="tab-time">{{ formatTime(data.editTime) }}</time>
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <el-timeline>
+                  <el-timeline-item v-for="(data, index) in tabnews[item.name]" :key="index" :timestamp="formatTime(data.editTime)">{{ data.title }}</el-timeline-item>
+                </el-timeline>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+        </el-tabs>
 
-    <el-backtop :visibility-height="100" />
+        <el-backtop :visibility-height="100" />
+      </div>
+    </div>
+    <Footer />
   </div>
 </template>
 <script setup lang="ts">
-import { Search } from '@element-plus/icons-vue';
-import { ref, onMounted, computed } from 'vue';
-import API from '@/api';
-import { useRouter } from 'vue-router';
-import _ from 'lodash';
-import { formatTime } from '@/utils';
-import bg from '@/assets/newsbg.jpg';
+import { Search } from '@element-plus/icons-vue'
+import { ref, onMounted, computed } from 'vue'
+import API from '@/api'
+import { useRouter } from 'vue-router'
+import _ from 'lodash'
+import { formatTime } from '@/utils'
+import bg from '@/assets/newsbg.jpg'
+import Footer from '@/components/Footer.vue'
 
-const searchText = ref('');
-const visible = ref(false);
-const newlist: any = ref([]);
-const whichTab = ref(1);
+const searchText = ref('')
+const visible = ref(false)
+const newlist: any = ref([])
+const whichTab = ref(1)
 onMounted(async () => {
-  const res = await API.news.list({});
+  const res = await API.news.list({})
   if (res.code == 0) {
-    newlist.value = res.data;
+    newlist.value = res.data
   }
-});
+})
 
-const searchnewslist: any = computed(() => (searchText.value ? newlist.value.filter((item: any) => item.title.includes(searchText.value)) : []));
+const searchnewslist: any = computed(() =>
+    searchText.value ? newlist.value.filter((item: any) => item.title.includes(searchText.value)) : []
+)
 
-const topNewsList: any = computed(() => newlist.value.slice(0, 4));
+const topNewsList: any = computed(() => newlist.value.slice(0, 4))
 
 const tablist = [
   {
@@ -117,25 +111,30 @@ const tablist = [
     label: '通知公告',
     name: 3,
   },
-];
+]
 
-const tabnews: any = computed(() => _.groupBy(newlist.value, item => item.category));
-const router = useRouter();
+const tabnews: any = computed(() => _.groupBy(newlist.value, (item) => item.category))
+const router = useRouter()
 const handleChangepage = (id: number) => {
-  router.push(`/news/${id}`);
-};
+  router.push(`/news/${id}`)
+}
 
-const carouselImages = ref([
-  '/src/assets/news/banner1.jpg',
-  '/src/assets/news/banner2.jpg',
-  '/src/assets/news/banner3.jpg',
-])
+const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/banner2.jpg', '/src/assets/news/banner3.jpg'])
 </script>
 
 <style scoped lang="scss">
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
 .container {
   position: relative;
-  height: calc(100vh - 60px);
 }
 
 .news-header {
