@@ -30,7 +30,7 @@
 
 <style scoped lang="scss">
 .footer {
-  background-color: #2c3e50;
+  background-color: #0d6e22;
   color: #ffffff;
   padding: 40px 0 20px;
   width: 100%;
@@ -56,14 +56,14 @@
 
       p {
         margin: 10px 0;
-        color: #cccccc;
       }
 
       a {
         display: block;
-        color: #cccccc;
+        color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
         margin: 10px 0;
+        transition: color 0.3s ease;
 
         &:hover {
           color: #ffffff;
@@ -79,7 +79,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 
     p {
-      color: #cccccc;
+      color: rgba(255, 255, 255, 0.7);
       font-size: 14px;
     }
   }
