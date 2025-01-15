@@ -10,19 +10,19 @@
 
       <div class="footer-section">
         <h3>关注我们</h3>
-        <p>微信公众号：CompanyName</p>
-        <p>新浪微博：@CompanyName</p>
+        <p>微信公众号：绿野仙踪</p>
+        <p>新浪微博：@绿野仙踪科技</p>
       </div>
 
       <div class="footer-section">
         <h3>快速链接</h3>
-        <router-link to="/about">关于我们</router-link>
         <router-link to="/news">新闻中心</router-link>
         <router-link to="/product">产品中心</router-link>
+        <router-link to="/about">关于我们</router-link>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2024 Company Name. All Rights Reserved. 京ICP备xxxxxxxx号</p>
+      <p>© 2024 绿野仙踪科技有限公司. All Rights Reserved.</p>
     </div>
   </footer>
 </template>
@@ -81,6 +81,20 @@
     p {
       color: #cccccc;
       font-size: 14px;
+    }
+  }
+}
+
+// 响应式设计
+@media screen and (max-width: 768px) {
+  .footer {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+      
+      .footer-section {
+        margin: 20px 0;
+      }
     }
   }
 }

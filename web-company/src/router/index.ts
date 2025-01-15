@@ -1,5 +1,8 @@
 import { RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router';
 import type { App } from 'vue';
+import News from '@/views/News.vue'
+import Product from '@/views/Product.vue'
+import About from '@/views/About.vue'
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -10,7 +13,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/news',
     name: 'news',
-    component: () => import('@/views/News.vue'),
+    component: News,
   },
   {
     path: '/news/:id',
@@ -20,7 +23,11 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: '/product',
     name: 'product',
-    component: () => import('@/views/Product.vue'),
+    component: Product,
+  },
+  {
+    path: '/about',
+    component: About,
   },
 ];
 
