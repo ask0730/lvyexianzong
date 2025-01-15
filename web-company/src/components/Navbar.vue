@@ -17,6 +17,17 @@
                     {{ item.name }}
                 </router-link>
             </div>
+
+            <div class="nav-right">
+                <el-button 
+                    type="primary" 
+                    class="login-btn"
+                    @click="$router.push('/login')"
+                >
+                    <el-icon class="icon"><User /></el-icon>
+                    登录
+                </el-button>
+            </div>
         </div>
     </nav>
 </template>
@@ -24,6 +35,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { User } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const currentPath = computed(() => route.path)
@@ -112,6 +124,34 @@ const navItems = [
     }
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+    
+    .login-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        
+        .icon {
+            font-size: 16px;
+        }
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.3);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+}
+
 // 响应式设计
 @media screen and (max-width: 768px) {
     .nav-container {
@@ -135,6 +175,17 @@ const navItems = [
             font-size: 14px;
         }
     }
+    
+    .nav-right {
+        .login-btn {
+            padding: 6px 16px;
+            font-size: 14px;
+            
+            .icon {
+                font-size: 14px;
+            }
+        }
+    }
 }
 
 // 超小屏幕适配
@@ -145,6 +196,20 @@ const navItems = [
     
     .nav-links {
         gap: 10px;
+    }
+    
+    .nav-right {
+        .login-btn {
+            padding: 6px 12px;
+            
+            .icon {
+                margin-right: 0;
+            }
+            
+            span {
+                display: none;
+            }
+        }
     }
 }
 </style>
