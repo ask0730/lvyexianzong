@@ -40,8 +40,10 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
+import { useUserStore } from '@/store/modules/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 const loading = ref(false)
 const loginFormRef = ref()
 
@@ -66,10 +68,13 @@ const handleLogin = () => {
         if (valid) {
             loading.value = true
             try {
-                // 模拟登录请求
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                ElMessage.success('登录成功')
-                router.push('/news')
+                const success = await userStore.loginAction(loginForm)
+                if (success) {
+                    ElMessage.success('登录成功')
+                    router.push('/news')
+                } else {
+                    ElMessage.error('登录失败，请检查用户名和密码')
+                }
             } catch (error) {
                 console.error('登录失败:', error)
                 ElMessage.error('登录失败，请稍后重试')
@@ -135,4 +140,4 @@ const handleRegister = () => {
         }
     }
 }
-</style> 
+</style>
