@@ -19,32 +19,14 @@
             </div>
 
             <div class="nav-right">
-                <template v-if="!userStore.token">
-                    <el-button 
-                        type="primary" 
-                        class="login-btn"
-                        @click="$router.push('/login')"
-                    >
-                        登录
-                    </el-button>
-                </template>
-                <template v-else>
-                    <el-dropdown @command="handleCommand">
-                        <div class="user-info">
-                            <el-avatar 
-                                :src="userStore.userInfo?.avatar || defaultAvatar" 
-                                class="user-avatar"
-                            />
-                            <span class="username">{{ userStore.userInfo?.username }}</span>
-                        </div>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
-                </template>
+                <el-button 
+                    type="primary" 
+                    class="login-btn"
+                    @click="$router.push('/login')"
+                >
+                    <el-icon class="icon"><User /></el-icon>
+                    登录
+                </el-button>
             </div>
         </div>
     </nav>
@@ -52,15 +34,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import { useUserStore } from '@/store/modules/user'
-import defaultAvatar from '@/assets/default-avatar.png'
+import { useRoute } from 'vue-router'
 import { User } from '@element-plus/icons-vue'
 
-const router = useRouter()
 const route = useRoute()
-const userStore = useUserStore()
+const currentPath = computed(() => route.path)
 
 const navItems = [
     // { name: '首页', path: '/' },
@@ -68,39 +46,6 @@ const navItems = [
     { name: '产品中心', path: '/product' },
     { name: '关于我们', path: '/about' }
 ]
-
-const currentPath = computed(() => route.path)
-
-const handleCommand = async (command: string) => {
-    switch (command) {
-        case 'profile':
-            // 跳转到个人中心页面
-            router.push('/profile')
-            break
-        case 'logout':
-            try {
-                await ElMessageBox.confirm('确定要退出登录吗?', '退出登录', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                })
-                
-                const success = await userStore.logoutAction()
-                if (success) {
-                    ElMessage.success('已成功退出登录')
-                    router.push('/login')
-                }
-            } catch (error) {
-                console.error('退出登录失败:', error)
-            }
-            break
-    }
-}
-
-const handleUserMenu = () => {
-    // 可以添加用户菜单逻辑，如显示下拉菜单
-    // 暂时先不实现
-}
 </script>
 
 <style scoped lang="scss">
@@ -203,26 +148,6 @@ const handleUserMenu = () => {
         
         &:active {
             transform: translateY(0);
-        }
-    }
-    
-    .user-info {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        &:hover {
-            opacity: 0.8;
-        }
-
-        .user-avatar {
-            margin-right: 10px;
-        }
-
-        .username {
-            font-size: 16px;
-            color: #333;
         }
     }
 }

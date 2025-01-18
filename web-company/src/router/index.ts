@@ -31,19 +31,13 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: () => import('@/views/Login.vue')
   },
   {
     path: '/register',
-    name: 'Register',
+    name: 'register',
     component: () => import('@/views/Register.vue')
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/views/Profile.vue'),
-    meta: { requiresAuth: true }
   }
 ];
 

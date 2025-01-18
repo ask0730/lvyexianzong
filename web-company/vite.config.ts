@@ -18,11 +18,7 @@ export default defineConfig(() => {
       port: 8081,
       force: true,
       proxy: {
-        '/api': {
-          target: 'http://localhost:3000',
-          changeOrigin: true,
-          ws: true
-        },
+        // 选项写法
         '/webapi': {
           target: 'http://localhost:3000',
           changeOrigin: true,

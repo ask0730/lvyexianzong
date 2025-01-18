@@ -56,10 +56,8 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message } from '@element-plus/icons-vue'
-import { useUserStore } from '@/store/modules/user'
 
 const router = useRouter()
-const userStore = useUserStore()
 const loading = ref(false)
 const registerFormRef = ref()
 
@@ -101,29 +99,21 @@ const registerRules = {
 const handleRegister = () => {
     registerFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
-            loading.value = true;
+            loading.value = true
             try {
-                const { confirmPassword, ...registerData } = registerForm;
-                console.log('发送注册请求:', registerData);
-                const response = await userStore.registerAction(registerData);
-                console.log('注册响应:', response);
-                ElMessage.success('注册成功，请登录');
-                router.push('/login');
-            } catch (error: any) {
-                console.error('注册错误:', error);
-                if (error.response?.data) {
-                    console.error('服务器响应:', error.response.data);
-                    ElMessage.error(error.response.data.message || '注册失败，请稍后重试');
-                } else {
-                    console.error('错误详情:', error);
-                    ElMessage.error(error.message || '注册失败，请稍后重试');
-                }
+                // 模拟注册请求
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                ElMessage.success('注册成功')
+                router.push('/login')
+            } catch (error) {
+                console.error('注册失败:', error)
+                ElMessage.error('注册失败，请稍后重试')
             } finally {
-                loading.value = false;
+                loading.value = false
             }
         }
-    });
-};
+    })
+}
 </script>
 
 <style scoped lang="scss">
@@ -204,4 +194,4 @@ const handleRegister = () => {
         }
     }
 }
-</style>
+</style> 
