@@ -213,4 +213,41 @@ router.post('/update', async (req, res) => {
   }
 });
 
+// 用户退出登录路由
+router.post('/logout', async (req, res) => {
+  try {
+    // 从 JWT 中获取用户信息
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) {
+      return res.status(401).json({ 
+        code: 1,
+        message: '未授权，请先登录' 
+      });
+    }
+
+    const decoded = JWT.verify(token)
+    if (!decoded) {
+      return res.status(401).json({ 
+        code: 1,
+        message: 'Token 无效，请重新登录' 
+      });
+    }
+
+    // 注销操作（在实际应用中可以考虑使用 Redis 等方式管理 Token 黑名单）
+    res.status(200).json({ 
+      code: 0,
+      message: '退出登录成功'
+    });
+
+  } catch (error) {
+    console.error('退出登录错误:', error);
+
+    res.status(500).json({ 
+      code: 1,
+      message: '服务器错误，请稍后重试',
+      error: process.env.NODE_ENV === 'development' ? error.message : '内部服务器错误'
+    });
+  }
+});
+
 module.exports = router;
