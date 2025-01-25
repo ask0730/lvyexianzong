@@ -40,6 +40,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
+import axios from 'axios'
 
 const router = useRouter()
 const loading = ref(false)
@@ -66,13 +67,24 @@ const handleLogin = () => {
         if (valid) {
             loading.value = true
             try {
-                // 模拟登录请求
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                ElMessage.success('登录成功')
-                router.push('/news')
-            } catch (error) {
+                const response = await axios.post('/webapi/users/login', {
+                    username: loginForm.username,
+                    password: loginForm.password
+                })
+
+                // 存储用户信息和 token
+                localStorage.setItem('userInfo', JSON.stringify(response.data.data))
+                localStorage.setItem('token', response.data.token)
+
+                // 设置 axios 默认请求头
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+
+                ElMessage.success(response.data.message || '登录成功')
+                router.push('/profile')
+            } catch (error: any) {
                 console.error('登录失败:', error)
-                ElMessage.error('登录失败，请稍后重试')
+                const errorMessage = error.response?.data?.message || '登录失败，请稍后重试'
+                ElMessage.error(errorMessage)
             } finally {
                 loading.value = false
             }
@@ -135,4 +147,4 @@ const handleRegister = () => {
         }
     }
 }
-</style> 
+</style>

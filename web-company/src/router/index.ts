@@ -38,6 +38,12 @@ export const routes: Array<RouteRecordRaw> = [
     path: '/register',
     name: 'register',
     component: () => import('@/views/Register.vue')
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -45,6 +51,21 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+
+// 添加全局导航守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  
+  if (to.meta.requiresAuth) {
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  } else {
+    next()
+  }
+})
 
 export default router;
 
