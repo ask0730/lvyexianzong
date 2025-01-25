@@ -56,6 +56,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock, Message } from '@element-plus/icons-vue'
+import axios from 'axios'
 
 const router = useRouter()
 const loading = ref(false)
@@ -101,13 +102,18 @@ const handleRegister = () => {
         if (valid) {
             loading.value = true
             try {
-                // 模拟注册请求
-                await new Promise(resolve => setTimeout(resolve, 1000))
-                ElMessage.success('注册成功')
+                const response = await axios.post('/webapi/users/register', {
+                    username: registerForm.username,
+                    password: registerForm.password,
+                    email: registerForm.email
+                })
+
+                ElMessage.success(response.data.message || '注册成功')
                 router.push('/login')
-            } catch (error) {
+            } catch (error: any) {
                 console.error('注册失败:', error)
-                ElMessage.error('注册失败，请稍后重试')
+                const errorMessage = error.response?.data?.message || '注册失败，请稍后重试'
+                ElMessage.error(errorMessage)
             } finally {
                 loading.value = false
             }
@@ -194,4 +200,4 @@ const handleRegister = () => {
         }
     }
 }
-</style> 
+</style>

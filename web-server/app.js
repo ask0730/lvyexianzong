@@ -25,23 +25,71 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 白名单路由，不需要 JWT 验证
+const publicRoutes = [
+  '/webapi/users/register', 
+  '/webapi/users/login',
+  '/adminapi/user/login'
+];
+
+// 全局中间件：处理跨域和公共路由
+app.use((req, res, next) => {
+  // 设置跨域头
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+  // 处理 OPTIONS 预检请求
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  // 如果是公共路由，直接放行
+  if (publicRoutes.includes(req.path)) {
+    return next();
+  }
+
+  next();
+});
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/webapi/users', usersRouter);
 
 app.use(webNewsRouter);
 app.use(webProductRouter);
+
 /*
  * /adminapi - 后台系统用的
  * /webapi - 企业官网用的
  */
 app.use((req, res, next) => {
-  if (req.url === '/adminapi/user/login') {
-    next();
-    return;
+  // 检查是否为公共路由
+  if (publicRoutes.includes(req.path)) {
+    return next();
   }
-  const token = req.headers['authorization'].split(' ')[1];
-  if (token) {
+
+  // 安全地检查授权头
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ 
+      code: '401', 
+      msg: '未提供授权令牌' 
+    });
+  }
+
+  try {
+    // 安全地处理 token
+    const tokenParts = authHeader.split(' ');
+    if (tokenParts.length !== 2) {
+      return res.status(401).json({ 
+        code: '401', 
+        msg: '授权令牌格式不正确' 
+      });
+    }
+
+    const token = tokenParts[1];
     const payload = JWT.verify(token);
+    
     if (payload) {
       const newToken = JWT.generate(
         {
@@ -53,10 +101,20 @@ app.use((req, res, next) => {
       res.header('Authorization', newToken);
       next();
     } else {
-      res.status(401).send({ code: '401', msg: 'token过期' });
+      res.status(401).json({ 
+        code: '401', 
+        msg: 'token过期' 
+      });
     }
+  } catch (error) {
+    console.error('JWT验证错误:', error);
+    res.status(401).json({ 
+      code: '401', 
+      msg: '无效的授权令牌' 
+    });
   }
 });
+
 app.use(UserRouter);
 app.use(NewsRouter);
 app.use(ProductRouter);
@@ -66,15 +124,20 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// 全局错误处理中间件
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
+  console.error('未捕获的错误:', err);
+
+  // 设置本地变量，仅在开发环境提供详细错误信息
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  // 返回错误响应
+  res.status(err.status || 500).json({
+    code: 1,
+    message: '服务器内部错误',
+    error: req.app.get('env') === 'development' ? err.message : undefined
+  });
 });
 
 module.exports = app;
