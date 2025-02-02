@@ -6,6 +6,15 @@
 
         <div class="time">
           {{ formatTime(currentNews.editTime) }}
+          <el-button 
+            v-if="currentNews._id" 
+            type="primary" 
+            size="small" 
+            @click="toggleCollect"
+          >
+            <el-icon><Star /></el-icon>
+            {{ isCollected ? '已收藏' : '收藏' }}
+          </el-button>
         </div>
 
         <el-divider>
@@ -36,28 +45,37 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect, onBeforeUnmount } from 'vue';
+import { ref, watchEffect, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { StarFilled } from '@element-plus/icons-vue';
+import { StarFilled, Star } from '@element-plus/icons-vue';
 import { formatTime } from '@/utils';
 import API from '@/api';
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
 const route = useRoute();
 const router = useRouter();
 const currentNews = ref({});
 const topNews = ref([]);
+const isCollected = ref(false);
+
 const stop = watchEffect(async () => {
   if (!route.params.id) return;
+  
   const res1 = await API.news.list({
     _id: route.params.id,
   });
+  
   if (res1.code == 0) {
     currentNews.value = res1.data[0];
+    checkCollectionStatus();
   }
+  
   const res2 = await API.news.toplist({
     limit: 4,
   });
-  if (res1.code == 0) {
+  
+  if (res2.code == 0) {
     topNews.value = res2.data;
   }
 });
@@ -65,6 +83,61 @@ const stop = watchEffect(async () => {
 onBeforeUnmount(() => {
   stop();
 });
+
+const checkCollectionStatus = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await axios.get('/webapi/news/collection-status', {
+      params: { articleId: currentNews.value._id },
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.data.code === 0) {
+      isCollected.value = response.data.data;
+    }
+  } catch (error) {
+    console.error('获取收藏状态失败:', error);
+  }
+};
+
+const toggleCollect = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
+
+  try {
+    const url = isCollected.value 
+      ? '/webapi/news/uncollect' 
+      : '/webapi/news/collect';
+    
+    const response = await axios.post(url, 
+      { articleId: currentNews.value._id },
+      { 
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } 
+      }
+    );
+
+    if (response.data.code === 0) {
+      isCollected.value = !isCollected.value;
+      ElMessage.success(isCollected.value ? '收藏成功' : '取消收藏成功');
+    } else {
+      ElMessage.error(response.data.message || '操作失败');
+    }
+  } catch (error) {
+    console.error('收藏操作失败:', error);
+    ElMessage.error('操作失败，请重试');
+  }
+};
 
 const handleChange = id => {
   router.push(`/news/${id}`);
@@ -79,5 +152,11 @@ const handleChange = id => {
 .time {
   font-size: 13px;
   color: gray;
+  display: flex;
+  align-items: center;
+}
+
+.el-button {
+  margin-left: 10px;
 }
 </style>

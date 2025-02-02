@@ -16,6 +16,51 @@ const NewsController = {
       data: result,
     });
   },
+
+  // 收藏文章
+  collectArticle: async (req, res) => {
+    const { articleId } = req.body;
+    const userId = req.user._id;
+    const result = await NewsService.collectArticle({ userId, articleId });
+    res.send({
+      code: result.success ? 0 : -1,
+      message: result.message
+    });
+  },
+
+  // 取消收藏文章
+  uncollectArticle: async (req, res) => {
+    const { articleId } = req.body;
+    const userId = req.user._id;
+    const result = await NewsService.uncollectArticle({ userId, articleId });
+    res.send({
+      code: result.success ? 0 : -1,
+      message: result.message
+    });
+  },
+
+  // 获取文章的收藏状态
+  getArticleCollectedStatus: async (req, res) => {
+    const { articleId } = req.query;
+    const userId = req.user._id;
+    const result = await NewsService.getArticleCollectedStatus({ userId, articleId });
+    res.send({
+      code: result.success ? 0 : -1,
+      message: result.message,
+      data: result.data
+    });
+  },
+
+  // 获取用户收藏的文章列表
+  getUserCollectedArticles: async (req, res) => {
+    const userId = req.user._id;
+    const result = await NewsService.getUserCollectedArticles({ userId });
+    res.send({
+      code: result.success ? 0 : -1,
+      message: result.message,
+      data: result.data
+    });
+  }
 };
 
 module.exports = NewsController;

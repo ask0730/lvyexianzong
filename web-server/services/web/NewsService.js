@@ -1,12 +1,103 @@
 const NewsModel = require('../../models/NewsModel');
+const CollectionModel = require('../../models/CollectionModel');
+const mongoose = require('mongoose');
 
 const NewsService = {
   getList: async ({ _id }) => {
     return _id ? NewsModel.find({ _id, isPublish: 1 }) : NewsModel.find({ isPublish: 1 }).sort({ editTime: -1 });
   },
+  
   getTopList: async ({ limit }) => {
     return NewsModel.find({ isPublish: 1 }).sort({ editTime: -1 }).limit(limit);
   },
+
+  // 收藏文章
+  collectArticle: async ({ userId, articleId }) => {
+    try {
+      const collection = new CollectionModel({
+        userId: new mongoose.Types.ObjectId(userId),
+        articleId: new mongoose.Types.ObjectId(articleId)
+      });
+
+      await collection.save();
+      return { success: true, message: '收藏成功' };
+    } catch (error) {
+      console.error('收藏文章错误:', error);
+      return { success: false, message: '收藏失败' };
+    }
+  },
+
+  // 取消收藏文章
+  uncollectArticle: async ({ userId, articleId }) => {
+    try {
+      await CollectionModel.findOneAndDelete({ 
+        userId: new mongoose.Types.ObjectId(userId), 
+        articleId: new mongoose.Types.ObjectId(articleId) 
+      });
+
+      return { success: true, message: '取消收藏成功' };
+    } catch (error) {
+      console.error('取消收藏错误:', error);
+      return { success: false, message: '取消收藏失败' };
+    }
+  },
+
+  // 获取文章的收藏状态
+  getArticleCollectedStatus: async ({ userId, articleId }) => {
+    try {
+      const collection = await CollectionModel.findOne({ 
+        userId: new mongoose.Types.ObjectId(userId), 
+        articleId: new mongoose.Types.ObjectId(articleId) 
+      });
+
+      return { 
+        success: true, 
+        data: !!collection 
+      };
+    } catch (error) {
+      console.error('获取收藏状态错误:', error);
+      return { success: false, message: '获取收藏状态失败' };
+    }
+  },
+
+  // 获取用户收藏的文章列表
+  getUserCollectedArticles: async ({ userId }) => {
+    try {
+      const collections = await CollectionModel.aggregate([
+        { 
+          $match: { 
+            userId: new mongoose.Types.ObjectId(userId) 
+          } 
+        },
+        {
+          $lookup: {
+            from: 'news', 
+            localField: 'articleId',
+            foreignField: '_id',
+            as: 'article'
+          }
+        },
+        { $unwind: '$article' },
+        { 
+          $project: {
+            _id: '$article._id',
+            title: '$article.title',
+            content: '$article.content',
+            cover: '$article.cover',
+            editTime: '$article.editTime'
+          }
+        }
+      ]);
+
+      return { 
+        success: true, 
+        data: collections 
+      };
+    } catch (error) {
+      console.error('获取收藏文章列表错误:', error);
+      return { success: false, message: '获取收藏文章列表失败' };
+    }
+  }
 };
 
 module.exports = NewsService;

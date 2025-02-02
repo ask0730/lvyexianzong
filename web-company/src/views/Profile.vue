@@ -59,6 +59,46 @@
         </el-form-item>
       </el-form>
     </el-card>
+
+    <el-card class="collections-container" header="我的收藏">
+      <div v-if="collectedArticles.length === 0" class="no-collections">
+        <el-empty description="您还没有收藏任何文章" />
+      </div>
+      <el-row v-else :gutter="20">
+        <el-col 
+          v-for="article in collectedArticles" 
+          :key="article._id" 
+          :span="8"
+          class="article-col"
+        >
+          <el-card 
+            shadow="hover" 
+            class="article-card"
+            @click="goToArticle(article._id)"
+          >
+            <div class="article-cover" v-if="article.cover">
+              <img :src="article.cover" alt="文章封面" />
+            </div>
+            <div class="article-content">
+              <h3>{{ article.title }}</h3>
+              <p class="article-excerpt">
+                {{ article.content.replace(/<[^>]+>/g, '').slice(0, 100) }}...
+              </p>
+              <div class="article-meta">
+                <span>{{ formatTime(article.editTime) }}</span>
+                <el-button 
+                  type="danger" 
+                  size="small" 
+                  @click.stop="uncollectArticle(article._id)"
+                >
+                  取消收藏
+                </el-button>
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
@@ -68,6 +108,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
 import defaultAvatar from '@/assets/default-avatar.png'
+import { formatTime } from '@/utils'
 
 const router = useRouter()
 
@@ -96,6 +137,8 @@ const editForm = reactive({
   introduction: ''
 })
 
+const collectedArticles = ref([])
+
 onMounted(() => {
   const storedUserInfo = localStorage.getItem('userInfo')
   if (storedUserInfo) {
@@ -103,7 +146,62 @@ onMounted(() => {
     editForm.gender = userInfo.value.gender
     editForm.introduction = userInfo.value.introduction
   }
+  
+  // 获取收藏文章
+  fetchCollectedArticles()
 })
+
+const fetchCollectedArticles = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.get('/webapi/news/collections', {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.data.code === 0) {
+      collectedArticles.value = response.data.data
+    } else {
+      ElMessage.error('获取收藏文章失败')
+    }
+  } catch (error) {
+    console.error('获取收藏文章错误:', error)
+    ElMessage.error('获取收藏文章失败')
+  }
+}
+
+const uncollectArticle = async (articleId) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await axios.post('/webapi/news/uncollect', 
+      { articleId },
+      { 
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } 
+      }
+    )
+
+    if (response.data.code === 0) {
+      ElMessage.success('取消收藏成功')
+      collectedArticles.value = collectedArticles.value.filter(
+        article => article._id !== articleId
+      )
+    } else {
+      ElMessage.error(response.data.message || '取消收藏失败')
+    }
+  } catch (error) {
+    console.error('取消收藏错误:', error)
+    ElMessage.error('取消收藏失败')
+  }
+}
+
+const goToArticle = (articleId) => {
+  router.push(`/news/${articleId}`)
+}
 
 const saveProfile = async () => {
   try {
@@ -160,7 +258,7 @@ const handleLogout = () => {
 
 <style scoped lang="scss">
 .profile-container {
-  max-width: 600px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -184,6 +282,8 @@ const handleLogout = () => {
 }
 
 .profile-info {
+  margin-bottom: 20px;
+
   .card-header {
     display: flex;
     justify-content: space-between;
@@ -193,6 +293,68 @@ const handleLogout = () => {
       display: flex;
       gap: 10px;
     }
+  }
+}
+
+.collections-container {
+  .article-col {
+    margin-bottom: 20px;
+  }
+
+  .article-card {
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .article-cover {
+      height: 200px;
+      overflow: hidden;
+      margin-bottom: 15px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+    }
+
+    .article-content {
+      h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--el-color-primary);
+      }
+
+      .article-excerpt {
+        color: var(--el-text-color-regular);
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--el-text-color-secondary);
+        font-size: 12px;
+      }
+    }
+  }
+
+  .no-collections {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
   }
 }
 </style>
