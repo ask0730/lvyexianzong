@@ -122,12 +122,11 @@ const logout = () => {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
     z-index: 1000;
+    height: 64px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-container {
@@ -300,5 +299,9 @@ const logout = () => {
             }
         }
     }
+}
+
+:deep(#app) {
+    padding-top: 64px;
 }
 </style>

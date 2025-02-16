@@ -16,5 +16,6 @@ import Navbar from '@/components/Navbar.vue';
 
 #app {
   height: 100%;
+  padding-top: 64px; /* 确保所有页面内容都有足够的顶部间距 */
 }
 </style>
