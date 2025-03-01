@@ -32,6 +32,15 @@
                 </el-carousel-item>
             </el-carousel>
         </el-card>
+
+        <el-card class="box-card">
+            <template #header>
+                <div class="card-header">
+                    <span>文章收藏统计</span>
+                </div>
+            </template>
+            <div id="chart-container" style="height: 400px;"></div>
+        </el-card>
     </div>
 </template>
 
@@ -39,6 +48,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useToolStore } from '@/store'
 import API from '@/api'
+import * as echarts from 'echarts'
 
 const loopList: any = ref([])
 const useTool = useToolStore()
@@ -56,8 +66,46 @@ const getData = async () => {
     }
 }
 
+const mockChartData = () => {
+    const chartDom = document.getElementById('chart-container')!
+    const myChart = echarts.init(chartDom)
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data: ['技术文章', '农业知识', '市场分析', '政策解读', '种植技巧'],
+            axisLabel: {
+                rotate: 45
+            }
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            data: [125, 230, 180, 90, 150],
+            type: 'bar',
+            itemStyle: {
+                color: '#409EFF'
+            },
+            showBackground: true,
+            backgroundStyle: {
+                color: 'rgba(180, 180, 180, 0.2)'
+            }
+        }]
+    }
+
+    myChart.setOption(option)
+}
+
 onMounted(() => {
     getData()
+    mockChartData()
 })
 </script>
 
