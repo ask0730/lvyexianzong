@@ -97,6 +97,60 @@ const NewsService = {
       console.error('获取收藏文章列表错误:', error);
       return { success: false, message: '获取收藏文章列表失败' };
     }
+  },
+
+  // 获取文章收藏统计
+  getCollectionStatistics: async () => {
+    try {
+      // 使用聚合管道进行统计
+      const statistics = await CollectionModel.aggregate([
+        {
+          $lookup: {
+            from: 'news',
+            localField: 'articleId',
+            foreignField: '_id',
+            as: 'article'
+          }
+        },
+        { $unwind: '$article' },
+        {
+          $group: {
+            _id: {
+              articleId: '$article._id',
+              title: '$article.title'
+            },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { count: -1 }
+        },
+        {
+          $limit: 10
+        }
+      ]);
+
+      // 格式化数据为前端所需格式
+      const titles = statistics.map(stat => stat._id.title);
+      const counts = statistics.map(stat => stat.count);
+
+      return {
+        success: true,
+        message: '获取收藏统计成功',
+        data: {
+          titles,
+          counts
+        }
+      };
+
+    } catch (error) {
+      console.error('获取收藏统计失败:', error);
+      return {
+        success: false,
+        message: '获取收藏统计失败',
+        data: null
+      };
+    }
   }
 };
 

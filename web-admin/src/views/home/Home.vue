@@ -49,6 +49,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useToolStore } from '@/store'
 import API from '@/api'
 import * as echarts from 'echarts'
+import axios from 'axios'
 
 const loopList: any = ref([])
 const useTool = useToolStore()
@@ -66,7 +67,7 @@ const getData = async () => {
     }
 }
 
-const mockChartData = () => {
+const mockChartData = async () => {
     const chartDom = document.getElementById('chart-container')!
     const myChart = echarts.init(chartDom)
     
@@ -77,36 +78,73 @@ const mockChartData = () => {
                 type: 'shadow'
             }
         },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '15%',
+            containLabel: true
+        },
         xAxis: {
             type: 'category',
-            data: ['技术文章', '农业知识', '市场分析', '政策解读', '种植技巧'],
+            data: [],
             axisLabel: {
-                rotate: 45
+                rotate: 45,
+                interval: 0,
+                textStyle: {
+                    fontSize: 12
+                },
+                overflow: 'break',
+                width: 120,
+                formatter: function (value) {
+                    const maxLength = 15;
+                    if (value.length > maxLength) {
+                        return value.substring(0, maxLength) + '...';
+                    }
+                    return value;
+                }
             }
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            name: '收藏数量',
+            nameTextStyle: {
+                fontSize: 12
+            },
+            minInterval: 1
         },
         series: [{
-            data: [125, 230, 180, 90, 150],
+            name: '收藏数量',
             type: 'bar',
+            data: [],
             itemStyle: {
                 color: '#409EFF'
             },
-            showBackground: true,
-            backgroundStyle: {
-                color: 'rgba(180, 180, 180, 0.2)'
+            label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}'
             }
         }]
+    };
+    
+    // 获取收藏统计数据
+    try {
+        const res = await axios.get('http://localhost:3000/webapi/news/collection-statistics');
+        if (res.data.code === 0) {
+            const { titles, counts } = res.data.data;
+            option.xAxis.data = titles;
+            option.series[0].data = counts;
+            myChart.setOption(option);
+        }
+    } catch (error) {
+        console.error('获取收藏统计失败:', error);
     }
-
-    myChart.setOption(option)
 }
 
 onMounted(() => {
-    getData()
-    mockChartData()
-})
+    getData();
+    mockChartData();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -50,16 +50,19 @@ const NewsController = {
       data: result.data
     });
   },
-
-  // 获取用户收藏的文章列表
-  getUserCollectedArticles: async (req, res) => {
-    const userId = req.user._id;
-    const result = await NewsService.getUserCollectedArticles({ userId });
+  // 获取文章收藏统计
+  getCollectionStatistics: async (req, res) => {
+    const result = await NewsService.getCollectionStatistics();
     res.send({
       code: result.success ? 0 : -1,
       message: result.message,
       data: result.data
     });
+  },
+
+  // 获取用户收藏的文章列表
+  getUserCollectedArticles: async ({ userId }) => {
+    return await NewsService.getUserCollectedArticles({ userId });
   }
 };
 
