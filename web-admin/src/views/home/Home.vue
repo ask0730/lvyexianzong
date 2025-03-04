@@ -117,7 +117,10 @@ const mockChartData = async () => {
             type: 'bar',
             data: [],
             itemStyle: {
-                color: '#409EFF'
+                color: 'var(--el-color-primary)',
+                emphasis: {
+                    color: 'var(--el-color-primary)'
+                }
             },
             label: {
                 show: true,
