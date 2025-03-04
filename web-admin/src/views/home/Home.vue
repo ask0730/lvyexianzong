@@ -132,8 +132,21 @@ const mockChartData = async () => {
         const res = await axios.get('http://localhost:3000/webapi/news/collection-statistics');
         if (res.data.code === 0) {
             const { titles, counts } = res.data.data;
-            option.xAxis.data = titles;
-            option.series[0].data = counts;
+            
+            // 将标题和收藏数组合成对象数组，方便排序
+            const combinedData = titles.map((title, index) => ({
+                title,
+                count: counts[index]
+            }));
+            
+            // 按收藏数降序排序并只取前5个
+            const top5Data = combinedData
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 5);
+            
+            // 分离排序后的标题和收藏数
+            option.xAxis.data = top5Data.map(item => item.title);
+            option.series[0].data = top5Data.map(item => item.count);
             myChart.setOption(option);
         }
     } catch (error) {
