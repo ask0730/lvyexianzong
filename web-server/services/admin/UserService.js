@@ -1,6 +1,17 @@
 const UserModel = require('../../models/UserModel');
 
 const UserService = {
+  getGenderStats: async () => {
+    const stats = await UserModel.aggregate([
+      {
+        $group: {
+          _id: "$gender",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    return stats;
+  },
   login: async ({ username, password }) => {
     return UserModel.find({
       username,

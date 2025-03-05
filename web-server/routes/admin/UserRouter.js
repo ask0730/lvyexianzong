@@ -6,6 +6,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'public/avataruploads/' });
 
 /* GET home page. */
+UserRouter.get('/adminapi/user/gender-stats', UserController.getGenderStats);
 UserRouter.post('/adminapi/user/login', UserController.login);
 UserRouter.post('/adminapi/user/upload', upload.single('file'), UserController.upload);
 //实现用户的列表的增删改查

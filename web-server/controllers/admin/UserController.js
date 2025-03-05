@@ -2,6 +2,24 @@ const UserService = require('../../services/admin/UserService');
 const JWT = require('../../utils/JWT');
 
 const UserController = {
+  getGenderStats: async (req, res) => {
+    try {
+      const stats = await UserService.getGenderStats();
+      const formattedStats = stats.map(item => ({
+        gender: item._id === 1 ? '男' : item._id === 2 ? '女' : '未知',
+        value: item.count
+      }));
+      res.send({
+        code: 0,
+        data: formattedStats
+      });
+    } catch (error) {
+      res.send({
+        code: 1,
+        msg: '获取性别统计数据失败'
+      });
+    }
+  },
   login: async (req, res) => {
     const result = await UserService.login(req.body);
     if (result.length === 0) {

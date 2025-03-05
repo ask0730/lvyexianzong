@@ -33,14 +33,28 @@
             </el-carousel>
         </el-card>
 
-        <el-card class="box-card">
-            <template #header>
-                <div class="card-header">
-                    <span>文章收藏统计</span>
-                </div>
-            </template>
-            <div id="chart-container" style="height: 400px;"></div>
-        </el-card>
+        <el-row :gutter="20">
+            <el-col :span="12">
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>文章收藏统计</span>
+                        </div>
+                    </template>
+                    <div id="chart-container" style="height: 400px;"></div>
+                </el-card>
+            </el-col>
+            <el-col :span="12">
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>用户性别分布</span>
+                        </div>
+                    </template>
+                    <div id="gender-chart" style="height: 400px;"></div>
+                </el-card>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -157,9 +171,56 @@ const mockChartData = async () => {
     }
 }
 
+const getGenderStats = async () => {
+    const genderChartDom = document.getElementById('gender-chart')!;
+    const genderChart = echarts.init(genderChartDom);
+    
+    try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:3000/adminapi/user/gender-stats', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (res.data.code === 0) {
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c} ({d}%)'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: '性别分布',
+                        type: 'pie',
+                        radius: '50%',
+                        data: res.data.data.map((item: any) => ({
+                            value: item.value,
+                            name: item.gender
+                        })),
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            genderChart.setOption(option);
+        }
+    } catch (error) {
+        console.error('获取性别统计数据失败:', error);
+    }
+};
 onMounted(() => {
     getData();
     mockChartData();
+    getGenderStats();
 });
 </script>
 
