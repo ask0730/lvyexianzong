@@ -12,6 +12,7 @@ const NewsRouter = require('./routes/admin/NewsRouter');
 const ProductRouter = require('./routes/admin/ProductRouter');
 const webNewsRouter = require('./routes/web/NewsRouter');
 const webProductRouter = require('./routes/web/ProductRouter');
+const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
 
 var app = express();
 
@@ -29,7 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const publicRoutes = [
   '/webapi/users/register', 
   '/webapi/users/login',
-  '/adminapi/user/login'
+  '/adminapi/user/login',
+  '/webapi/view-record'
 ];
 
 // 全局中间件：处理跨域和公共路由
@@ -57,6 +59,7 @@ app.use('/webapi/users', usersRouter);
 
 app.use(webNewsRouter);
 app.use(webProductRouter);
+app.use(webViewRecordRouter);
 
 /*
  * /adminapi - 后台系统用的

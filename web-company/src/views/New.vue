@@ -69,6 +69,14 @@ const stop = watchEffect(async () => {
   if (res1.code == 0) {
     currentNews.value = res1.data[0];
     checkCollectionStatus();
+    // 记录文章浏览
+    try {
+      await axios.post('/webapi/view-record', {
+        articleId: currentNews.value._id
+      });
+    } catch (error) {
+      console.error('记录浏览量失败:', error);
+    }
   }
   
   const res2 = await API.news.toplist({

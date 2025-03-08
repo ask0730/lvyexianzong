@@ -33,6 +33,8 @@
             </el-carousel>
         </el-card>
 
+        <ViewStatistics />
+
         <el-row :gutter="20">
             <el-col :span="12">
                 <el-card class="box-card">
@@ -64,6 +66,7 @@ import { useToolStore } from '@/store'
 import API from '@/api'
 import * as echarts from 'echarts'
 import axios from 'axios'
+import ViewStatistics from './components/ViewStatistics.vue'
 
 const loopList: any = ref([])
 const useTool = useToolStore()
