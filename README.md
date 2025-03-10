@@ -6,8 +6,6 @@ vue3-node full stack project
 
 vue3 + ts + elementplus + pinia 管理系统系统
 
-![](admin.png)
-
 ```bash
 npm i
 npm run dev
@@ -16,8 +14,6 @@ npm run dev
 ## web-company
 
 vue3 + ts + elementplus 门户网站
-
-![](company.png)
 
 ```bash
 npm i
