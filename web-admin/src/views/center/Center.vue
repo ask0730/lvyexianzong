@@ -66,6 +66,7 @@ import { ElMessage } from 'element-plus'
 import Upload from '@/components/Upload.vue'
 import { useToolStore } from '@/store'
 import API from '@/api'
+import { useThemeStore } from '@/store/modules/theme'
 
 const useTool = useToolStore()
 const avatarUrl = computed(() =>
@@ -129,25 +130,23 @@ const submitForm = () => {
 }
 
 // 主题切换相关
-const currentTheme = ref('blue')
+const themeStore = useThemeStore()
+const currentTheme = ref(themeStore.theme)
 
 const themes = [
-    { label: '默认蓝', value: 'blue', color: '#409eff' },
-    { label: '清新绿', value: 'green', color: '#67c23a' },
-    { label: '活力红', value: 'red', color: '#f56c6c' },
-    { label: '高贵紫', value: 'purple', color: '#9c27b0' },
+  { label: '蓝色主题', value: 'blue', color: '#409eff' },
+  { label: '绿色主题', value: 'green', color: '#67c23a' },
+  { label: '红色主题', value: 'red', color: '#f56c6c' },
+  { label: '紫色主题', value: 'purple', color: '#9c27b0' }
 ]
 
 const handleThemeChange = (theme: string) => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('admin-theme', theme)
-    currentTheme.value = theme
+  themeStore.setTheme(theme)
+  currentTheme.value = theme
 }
 
 onMounted(() => {
-    const theme = localStorage.getItem('admin-theme') || 'blue'
-    currentTheme.value = theme
-    handleThemeChange(theme)
+  currentTheme.value = themeStore.theme
 })
 </script>
 

@@ -1,5 +1,21 @@
 <template>
   <router-view />
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useThemeStore } from './store/modules/theme'
+
+const themeStore = useThemeStore()
+
+onMounted(() => {
+  themeStore.initTheme()
+})
+</script>
+
+<style>
+#app {
+  width: 100%;
+  height: 100%;
+}
+</style>
 <style scoped></style>
