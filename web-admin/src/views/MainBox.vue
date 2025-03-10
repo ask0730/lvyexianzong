@@ -39,7 +39,8 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .main-container {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
 
   .el-main {
     padding: 20px;

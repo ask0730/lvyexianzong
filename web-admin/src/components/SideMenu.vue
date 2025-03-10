@@ -64,10 +64,10 @@ const route = useRoute();
 
 <style lang="scss" scoped>
 .el-aside {
-  height: 100vh;
+  height: 100%;
 
   .el-menu {
-    height: 100vh;
+    height: 100%;
     border-right: none;
 
     .el-menu-item.is-active {
