@@ -24,7 +24,7 @@ npm run dev
 
 nodeJS express 后台接口
 
-演示需要连接本地 mongodb 数据库，在 mongodb bin 目录执行：mongod.exe --dbpath=E:\Users\Leon\Desktop\db [--dbpath=你的本地地址不能有中文]
+演示需要连接本地 mongodb 数据库，在 mongodb bin 目录执行：mongod.exe --dbpath=E:\Users\Ask\Desktop\db [--dbpath=你的本地地址不能有中文]
 
 ```bash
 npm i
