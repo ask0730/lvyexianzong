@@ -19,15 +19,18 @@
                     <span>农产品展示</span>
                 </div>
             </template>
-            <el-carousel :interval="4000" type="card" height="400px" v-if="loopList.length">
-                <el-carousel-item v-for="item in loopList" :key="item._id">
-                    <div :style="{
-              backgroundImage: `url(http://localhost:3000${item.cover})`,
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-              height: '100%',
-            }">
-                        <h3>{{ item.title }}</h3>
+            <el-carousel :interval="4000" type="card" height="400px" v-if="loopList.length" :autoplay="true" indicator-position="outside">
+                <el-carousel-item v-for="item in loopList" :key="item._id" class="carousel-item">
+                    <div class="carousel-content" :style="{
+                        backgroundImage: `url(http://localhost:3000${item.cover})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        height: '100%',
+                    }">
+                        <div class="title-overlay">
+                            <h3>{{ item.title }}</h3>
+                        </div>
                     </div>
                 </el-carousel-item>
             </el-carousel>
@@ -247,5 +250,65 @@ onMounted(() => {
 
 .el-carousel__item:nth-child(2n + 1) {
     background-color: #d3dce6;
+}
+
+.carousel-item {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.carousel-content {
+    position: relative;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    padding: 20px;
+
+    h3 {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        text-align: center;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+}
+
+:deep(.el-carousel__indicators) {
+    transform: translateY(16px);
+}
+
+:deep(.el-carousel__indicator) {
+    .el-carousel__button {
+        background-color: var(--el-color-primary);
+        border-radius: 4px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: scale(1.2);
+        }
+    }
+}
+
+:deep(.el-carousel__item--card) {
+    border-radius: 12px;
 }
 </style>
