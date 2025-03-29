@@ -156,33 +156,77 @@ onMounted(() => {
     .box-card {
         text-align: center;
         margin-bottom: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .el-avatar {
+            margin: 20px 0;
+            border: 4px solid var(--el-color-primary-light-8);
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.05);
+                border-color: var(--el-color-primary);
+            }
+        }
+
+        h3 {
+            margin: 15px 0 10px;
+            color: var(--el-text-color-primary);
+            font-size: 1.5em;
+        }
+
+        h5 {
+            margin: 10px 0;
+            color: var(--el-text-color-secondary);
+            font-size: 1em;
+        }
     }
 }
 
 // 主题切换样式
 .theme-card {
     margin-top: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        font-weight: bold;
+        color: var(--el-text-color-primary);
+    }
 }
 
 .theme-container {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+    padding: 10px;
 }
 
 .theme-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: 2px solid #e4e7ed;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
+    flex: 1 1 calc(50% - 6px);
 
     &:hover {
         border-color: var(--el-color-primary);
         transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     &.active {
@@ -191,14 +235,53 @@ onMounted(() => {
     }
 
     .color-preview {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .theme-label {
         font-size: 14px;
-        color: #606266;
+        color: var(--el-text-color-regular);
+        font-weight: 500;
+    }
+}
+
+// 表单样式优化
+.demo-ruleForm {
+    padding: 20px;
+
+    :deep(.el-form-item) {
+        margin-bottom: 25px;
+
+        .el-form-item__label {
+            font-weight: 500;
+            color: var(--el-text-color-primary);
+        }
+
+        .el-input__wrapper,
+        .el-textarea__inner {
+            transition: all 0.3s ease;
+
+            &:hover {
+                box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
+            }
+
+            &:focus-within {
+                box-shadow: 0 0 0 1px var(--el-color-primary);
+            }
+        }
+    }
+
+    .el-button {
+        width: 120px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
     }
 }
 </style>
