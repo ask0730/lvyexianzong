@@ -85,9 +85,27 @@ onMounted(async () => {
   z-index: 1;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
+  @media (max-width: 992px) {
+    width: 60%;
+  }
+
+  @media (max-width: 768px) {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 576px) {
+    width: 90%;
+    max-height: 70%;
+  }
+
   &:hover {
     transform: translateX(-15px) scale(1.02);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      transform: scale(1.02);
+    }
   }
 
   .card-header h2 {
@@ -97,6 +115,10 @@ onMounted(async () => {
     font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1.3;
+
+    @media (max-width: 576px) {
+      font-size: 24px;
+    }
   }
 
   .introduction {
@@ -105,6 +127,11 @@ onMounted(async () => {
     line-height: 1.7;
     margin: 20px 0;
     font-weight: 500;
+
+    @media (max-width: 576px) {
+      font-size: 15px;
+      margin: 15px 0;
+    }
   }
 
   .detail {
@@ -113,12 +140,11 @@ onMounted(async () => {
     line-height: 1.8;
     margin: 25px 0;
     letter-spacing: 0.2px;
-  }
 
-  .more {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(0,0,0,0.08);
+    @media (max-width: 576px) {
+      font-size: 14px;
+      margin: 15px 0;
+    }
   }
 }
 
@@ -152,3 +178,4 @@ onMounted(async () => {
   }
 }
 </style>
+

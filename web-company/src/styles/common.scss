@@ -1,2 +1,129 @@
+// 响应式布局断点
+$breakpoints: (
+  'xs': 320px,
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+  'xxl': 1400px
+);
 
+// 媒体查询混合宏
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media screen and (max-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+}
 
+// 容器类
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  
+  @include respond-to('xxl') {
+    max-width: 1320px;
+  }
+  
+  @include respond-to('xl') {
+    max-width: 1140px;
+  }
+  
+  @include respond-to('lg') {
+    max-width: 960px;
+  }
+  
+  @include respond-to('md') {
+    max-width: 720px;
+  }
+  
+  @include respond-to('sm') {
+    max-width: 540px;
+  }
+}
+
+// 弹性布局工具类
+.flex {
+  display: flex;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.align-center {
+  align-items: center;
+}
+
+// 响应式隐藏类
+@each $breakpoint, $value in $breakpoints {
+  .hide-#{$breakpoint} {
+    @include respond-to($breakpoint) {
+      display: none !important;
+    }
+  }
+}
+
+// 响应式间距类
+$spacers: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 1rem,
+  4: 1.5rem,
+  5: 3rem
+);
+
+@each $breakpoint, $value in $breakpoints {
+  @include respond-to($breakpoint) {
+    @each $space, $size in $spacers {
+      .m-#{$breakpoint}-#{$space} { margin: $size !important; }
+      .p-#{$breakpoint}-#{$space} { padding: $size !important; }
+    }
+  }
+}
+
+// 响应式文本类
+.text-center-sm {
+  @include respond-to('sm') {
+    text-align: center !important;
+  }
+}
+
+// 响应式网格系统
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    flex: 0 0 percentage($i / 12);
+    max-width: percentage($i / 12);
+    padding: 0 15px;
+  }
+  
+  @each $breakpoint, $value in $breakpoints {
+    .col-#{$breakpoint}-#{$i} {
+      @include respond-to($breakpoint) {
+        flex: 0 0 percentage($i / 12);
+        max-width: percentage($i / 12);
+      }
+    }
+  }
+}
