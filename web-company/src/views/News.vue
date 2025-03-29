@@ -23,7 +23,7 @@
         </div>
         <div class="topnews">
           <el-row :gutter="20">
-            <el-col :span="6" v-for="item in topNewsList" :key="item._id">
+            <el-col :xs="24" :sm="12" :md="6" v-for="item in topNewsList" :key="item._id">
               <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(item._id)">
                 <div class="image" :style="{
                     backgroundImage: `url(http://localhost:3000${item.cover})`,
@@ -41,14 +41,14 @@
         <el-tabs style="margin: 20px" v-model="whichTab" class="demo-tabs">
           <el-tab-pane :key="item.name" v-for="item in tablist" :label="item.label" :name="item.name">
             <el-row :gutter="20">
-              <el-col :span="18">
+              <el-col :xs="24" :sm="24" :md="18">
                 <div v-for="data in tabnews[item.name]" :key="data._id" style="padding: 10px">
-                  <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)">
+                  <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)" class="news-card">
                     <div class="tab-image" :style="{
                         backgroundImage: `url(http://localhost:3000${data.cover})`,
                       }"></div>
-                    <div style="padding: 14px; float: left">
-                      <span>{{ data.title }}</span>
+                    <div class="news-content">
+                      <span class="news-title">{{ data.title }}</span>
                       <div class="bottom">
                         <time class="tab-time">{{ formatTime(data.editTime) }}</time>
                       </div>
@@ -56,7 +56,7 @@
                   </el-card>
                 </div>
               </el-col>
-              <el-col :span="6">
+              <el-col :xs="24" :sm="24" :md="6">
                 <el-timeline>
                   <el-timeline-item v-for="(data, index) in tabnews[item.name]" :key="index" :timestamp="formatTime(data.editTime)">{{ data.title }}</el-timeline-item>
                 </el-timeline>
@@ -135,6 +135,9 @@ const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/ba
 
 .container {
   position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
 .news-header {
@@ -142,6 +145,20 @@ const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/ba
   height: 400px;
   background-size: cover;
 }
+
+.news-carousel {
+  width: 100%;
+  @media screen and (max-width: 768px) {
+    height: 200px !important;
+  }
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .search {
   position: absolute;
   top: 300px;
@@ -149,15 +166,29 @@ const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/ba
   text-align: center;
   .el-input {
     width: 50%;
+    @media screen and (max-width: 768px) {
+      width: 90%;
+    }
+  }
+  @media screen and (max-width: 768px) {
+    top: 150px;
   }
 }
 
 .search-item {
   height: 50px;
   line-height: 50px;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   &:hover {
     background: whitesmoke;
     color: red;
+  }
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+    height: 40px;
+    line-height: 40px;
   }
 }
 
@@ -167,10 +198,26 @@ const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/ba
     width: 100%;
     height: 150px;
     background-size: cover;
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: scale(1.05);
+    }
   }
   .time {
     font-size: 13px;
     color: gray;
+  }
+  @media screen and (max-width: 768px) {
+    margin: 10px;
+  }
+}
+
+.news-card {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
   }
 }
 
@@ -178,23 +225,52 @@ const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/ba
   width: 150px;
   height: 100px;
   background-size: cover;
-  float: left;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.05);
+  }
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    height: 150px;
+  }
 }
+
+.news-content {
+  flex: 1;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.news-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
 .tab-time {
   font-size: 13px;
   color: gray;
 }
 
-.news-carousel {
-  width: 100%;
-}
-
-.carousel-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.el-timeline {
+  @media screen and (max-width: 768px) {
+    margin-top: 20px;
+  }
 }
 </style>
-
-
-
+.el-popover {
+  @media screen and (max-width: 768px) {
+    width: 90% !important;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}
