@@ -61,6 +61,16 @@ onMounted(async () => {
   align-items: center;
   justify-content: flex-end;
   padding-right: 5%;
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .overlay {
@@ -69,7 +79,9 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
+  background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
+  backdrop-filter: blur(3px);
+  transition: all 0.5s ease;
 }
 
 .box-card {
@@ -79,11 +91,12 @@ onMounted(async () => {
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px);
   border: none;
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   position: relative;
   z-index: 1;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideIn 0.8s ease-out;
 
   @media (max-width: 992px) {
     width: 60%;
@@ -100,11 +113,15 @@ onMounted(async () => {
   }
 
   &:hover {
-    transform: translateX(-15px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transform: translateX(-20px) scale(1.03);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
 
     @media (max-width: 768px) {
-      transform: scale(1.02);
+      transform: scale(1.03);
+    }
+
+    .card-header h2 {
+      color: #409EFF;
     }
   }
 
@@ -115,6 +132,7 @@ onMounted(async () => {
     font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1.3;
+    transition: color 0.3s ease;
 
     @media (max-width: 576px) {
       font-size: 24px;
@@ -127,6 +145,7 @@ onMounted(async () => {
     line-height: 1.7;
     margin: 20px 0;
     font-weight: 500;
+    animation: slideUp 0.6s ease-out 0.3s both;
 
     @media (max-width: 576px) {
       font-size: 15px;
@@ -140,17 +159,64 @@ onMounted(async () => {
     line-height: 1.8;
     margin: 25px 0;
     letter-spacing: 0.2px;
+    animation: slideUp 0.6s ease-out 0.6s both;
 
     @media (max-width: 576px) {
       font-size: 14px;
       margin: 15px 0;
     }
   }
+
+  .more {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    animation: slideUp 0.6s ease-out 0.9s both;
+
+    .more-text {
+      color: #2c3e50;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .more-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #409EFF;
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: #66b1ff;
+        transform: translateY(-2px);
+      }
+    }
+  }
 }
 
-.overlay {
-  background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
-  transition: opacity 0.3s ease;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .page-container {
@@ -168,14 +234,15 @@ onMounted(async () => {
 }
 
 :deep(.el-carousel__button) {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
   
   &:hover {
     background-color: #fff;
+    transform: scale(1.2);
   }
 }
 </style>
-
