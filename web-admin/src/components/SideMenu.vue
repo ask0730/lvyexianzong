@@ -65,32 +65,61 @@ const route = useRoute();
 <style lang="scss" scoped>
 .el-aside {
   height: 100%;
+  transition: width 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 
   .el-menu {
     height: 100%;
     border-right: none;
+    font-size: 15px;
 
-    .el-menu-item.is-active {
-      background-color: var(--el-color-primary-dark-2) !important;
-      &:hover {
+    .el-icon {
+      font-size: 18px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .el-menu-item {
+      height: 56px;
+      line-height: 56px;
+      padding: 0 20px !important;
+      transition: all 0.3s;
+
+      &.is-active {
         background-color: var(--el-color-primary-dark-2) !important;
+        font-weight: bold;
+        &:hover {
+          background-color: var(--el-color-primary-dark-2) !important;
+        }
+      }
+
+      &:hover {
+        background-color: var(--el-color-primary-light-3) !important;
       }
     }
 
-    .el-menu-item:hover {
-      background-color: var(--el-color-primary-light-3) !important;
-    }
-
     :deep(.el-sub-menu) {
-      .el-sub-menu__title:hover {
-        background-color: var(--el-color-primary-light-3) !important;
+      .el-sub-menu__title {
+        height: 56px;
+        line-height: 56px;
+        padding: 0 20px !important;
+        transition: all 0.3s;
+
+        &:hover {
+          background-color: var(--el-color-primary-light-3) !important;
+        }
       }
       
       .el-menu {
         background-color: var(--el-color-primary-light-5) !important;
+        padding: 5px 0;
         
         .el-menu-item {
+          height: 50px;
+          line-height: 50px;
           background-color: var(--el-color-primary-light-5) !important;
+          margin: 4px 0;
+          border-radius: 4px;
           
           &:hover {
             background-color: var(--el-color-primary-light-3) !important;
