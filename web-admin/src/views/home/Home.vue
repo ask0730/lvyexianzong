@@ -232,46 +232,66 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .box-card {
-    margin-top: 50px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15);
+    }
+    
+    .el-row {
+        align-items: center;
+    }
+    
+    h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--el-text-color-primary);
+        transition: color 0.3s ease;
+    }
 }
 
-.el-carousel__item h3 {
-    color: #475669;
-    font-size: 14px;
-    opacity: 0.75;
-    line-height: 200px;
-    margin: 0;
-    text-align: center;
-}
-
-.el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-    background-color: #d3dce6;
+.card-header {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    
+    &::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 16px;
+        background-color: var(--el-color-primary);
+        margin-right: 8px;
+        border-radius: 2px;
+    }
 }
 
 .carousel-item {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    
     &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     }
 }
 
 .carousel-content {
     position: relative;
     border-radius: 12px;
-    transition: transform 0.3s ease;
-
-    &:hover {
-        transform: scale(1.02);
-    }
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .title-overlay {
@@ -279,36 +299,51 @@ onMounted(() => {
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-    padding: 20px;
-
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 30px 20px;
+    backdrop-filter: blur(4px);
+    
     h3 {
         color: #ffffff;
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
         margin: 0;
         text-align: center;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        transform: translateY(0);
+        transition: transform 0.3s ease;
     }
 }
 
 :deep(.el-carousel__indicators) {
-    transform: translateY(16px);
+    transform: translateY(20px);
 }
 
 :deep(.el-carousel__indicator) {
     .el-carousel__button {
         background-color: var(--el-color-primary);
-        border-radius: 4px;
-        transition: all 0.3s ease;
-
+        border-radius: 6px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 24px;
+        height: 4px;
+        
         &:hover {
-            transform: scale(1.2);
+            transform: scaleX(1.2);
+            opacity: 0.8;
         }
+    }
+    
+    &.is-active .el-carousel__button {
+        transform: scaleX(1.5);
     }
 }
 
-:deep(.el-carousel__item--card) {
-    border-radius: 12px;
+#chart-container,
+#gender-chart {
+    border-radius: 8px;
+    padding: 20px;
+    background: linear-gradient(145deg, #ffffff, #f5f7fa);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 </style>
+
