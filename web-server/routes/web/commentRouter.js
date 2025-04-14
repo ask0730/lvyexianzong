@@ -44,11 +44,11 @@ router.post('/add',
                 });
             }
 
-            // 验证新闻ID
+            // 验证文章ID
             if (!newsId?.trim()) {
                 return res.status(400).send({
                     code: -1,
-                    message: '新闻ID不能为空'
+                    message: '文章ID不能为空'
                 });
             }
 

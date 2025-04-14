@@ -2,50 +2,39 @@
     <nav class="navbar">
         <div class="nav-container">
             <router-link to="/" class="logo">
-                <img src="@/assets/logo.png" alt="Logo">
+                <img src="@/assets/logo.png" alt="Logo" />
                 <span class="company-name">绿野仙踪</span>
             </router-link>
 
             <div class="nav-links">
-                <router-link 
-                    v-for="item in navItems" 
-                    :key="item.path" 
-                    :to="item.path"
-                    class="nav-item"
-                    :class="{ active: currentPath === item.path }"
-                >
-                    {{ item.name }}
-                </router-link>
+                <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="nav-item" :class="{ active: currentPath === item.path }">{{ item.name }}</router-link>
             </div>
 
             <div class="nav-right">
                 <template v-if="!isLoggedIn">
-                    <el-button 
-                        type="primary" 
-                        class="login-btn"
-                        @click="$router.push('/login')"
-                    >
-                        <el-icon class="icon"><User /></el-icon>
-                        登录
+                    <el-button type="primary" class="login-btn" @click="$router.push('/login')">
+                        <el-icon class="icon">
+                            <User />
+                        </el-icon>登录
                     </el-button>
                 </template>
                 <template v-else>
                     <el-dropdown @command="handleUserCommand">
                         <div class="user-info">
-                            <el-avatar 
-                                :src="userAvatar" 
-                                class="user-avatar"
-                                :icon="UserFilled"
-                            />
+                            <el-avatar :src="userAvatar" class="user-avatar" :icon="UserFilled" />
                             <span class="username">{{ userName }}</span>
                         </div>
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item command="profile">
-                                    <el-icon><User /></el-icon>个人中心
+                                    <el-icon>
+                                        <User />
+                                    </el-icon>个人中心
                                 </el-dropdown-item>
                                 <el-dropdown-item command="logout">
-                                    <el-icon><SwitchButton /></el-icon>退出登录
+                                    <el-icon>
+                                        <SwitchButton />
+                                    </el-icon>退出登录
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
@@ -68,9 +57,9 @@ const router = useRouter()
 const currentPath = computed(() => route.path)
 
 const navItems = [
-    { name: '新闻中心', path: '/news' },
+    { name: '文章中心', path: '/news' },
     { name: '产品中心', path: '/product' },
-    { name: '关于我们', path: '/about' }
+    { name: '关于我们', path: '/about' },
 ]
 
 const isLoggedIn = ref(false)
@@ -80,9 +69,9 @@ const userName = ref('用户')
 const updateUserInfo = () => {
     const token = localStorage.getItem('token')
     const userInfo = localStorage.getItem('userInfo')
-    
+
     isLoggedIn.value = !!token
-    
+
     if (userInfo) {
         const parsedUserInfo = JSON.parse(userInfo)
         userName.value = parsedUserInfo.username || '用户'
@@ -96,7 +85,7 @@ onMounted(updateUserInfo)
 watch(() => route.path, updateUserInfo)
 
 const handleUserCommand = (command) => {
-    switch(command) {
+    switch (command) {
         case 'profile':
             router.push('/profile')
             break
@@ -144,12 +133,12 @@ const logout = () => {
     align-items: center;
     text-decoration: none;
     gap: 10px;
-    
+
     img {
         height: 40px;
         width: auto;
     }
-    
+
     .company-name {
         font-size: 20px;
         font-weight: bold;
@@ -161,7 +150,7 @@ const logout = () => {
 .nav-links {
     display: flex;
     gap: 30px;
-    
+
     .nav-item {
         position: relative;
         padding: 8px 0;
@@ -169,7 +158,7 @@ const logout = () => {
         text-decoration: none;
         font-size: 16px;
         transition: all 0.3s ease;
-        
+
         &::after {
             content: '';
             position: absolute;
@@ -181,10 +170,11 @@ const logout = () => {
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
-        
-        &:hover, &.active {
+
+        &:hover,
+        &.active {
             color: var(--el-color-primary);
-            
+
             &::after {
                 width: 100%;
             }
@@ -195,7 +185,7 @@ const logout = () => {
 .nav-right {
     display: flex;
     align-items: center;
-    
+
     .login-btn {
         display: flex;
         align-items: center;
@@ -204,36 +194,36 @@ const logout = () => {
         border-radius: 20px;
         font-weight: 500;
         transition: all 0.3s ease;
-        
+
         .icon {
             font-size: 16px;
         }
-        
+
         &:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.3);
         }
-        
+
         &:active {
             transform: translateY(0);
         }
     }
-    
+
     .user-info {
         display: flex;
         align-items: center;
         cursor: pointer;
     }
-    
+
     .user-avatar {
         margin-right: 10px;
         transition: transform 0.3s ease;
     }
-    
+
     .user-avatar:hover {
         transform: scale(1.1);
     }
-    
+
     .username {
         font-size: 14px;
         color: #333;
@@ -245,30 +235,30 @@ const logout = () => {
     .nav-container {
         padding: 0 15px;
     }
-    
+
     .logo {
         img {
             height: 32px;
         }
-        
+
         .company-name {
             font-size: 18px;
         }
     }
-    
+
     .nav-links {
         gap: 15px;
-        
+
         .nav-item {
             font-size: 14px;
         }
     }
-    
+
     .nav-right {
         .login-btn {
             padding: 6px 16px;
             font-size: 14px;
-            
+
             .icon {
                 font-size: 14px;
             }
@@ -281,19 +271,19 @@ const logout = () => {
     .company-name {
         display: none;
     }
-    
+
     .nav-links {
         gap: 10px;
     }
-    
+
     .nav-right {
         .login-btn {
             padding: 6px 12px;
-            
+
             .icon {
                 margin-right: 0;
             }
-            
+
             span {
                 display: none;
             }

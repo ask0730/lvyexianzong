@@ -41,7 +41,7 @@ class CommentController {
     }
   }
 
-  // 获取新闻评论列表
+  // 获取文章评论列表
   async getComments(req, res) {
     try {
       const { newsId } = req.params;

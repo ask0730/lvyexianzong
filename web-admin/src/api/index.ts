@@ -16,11 +16,11 @@ export default {
     update: post('/adminapi/user/update') // 修改用户
   },
   news: {
-    add: post('/adminapi/news/add'), // 添加新闻
-    list: post('/adminapi/news/list'), // 新闻列表
-    delete: post('/adminapi/news/delete'), // 删除新闻
-    update: post('/adminapi/news/update'), // 修改新闻
-    publish: post('/adminapi/news/publish'), // 新闻发布
+    add: post('/adminapi/news/add'), // 添加文章
+    list: post('/adminapi/news/list'), // 文章列表
+    delete: post('/adminapi/news/delete'), // 删除文章
+    update: post('/adminapi/news/update'), // 修改文章
+    publish: post('/adminapi/news/publish'), // 文章发布
   },
   product: {
     add: post('/adminapi/product/add'), // 添加产品
