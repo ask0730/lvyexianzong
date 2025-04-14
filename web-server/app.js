@@ -14,6 +14,7 @@ const webNewsRouter = require('./routes/web/NewsRouter');
 const webProductRouter = require('./routes/web/ProductRouter');
 const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
 const webLikeRouter = require('./routes/web/likeRoutes');
+const webCommentRouter = require('./routes/web/commentRouter');
 
 var app = express();
 
@@ -32,7 +33,8 @@ const publicRoutes = [
   '/webapi/users/register', 
   '/webapi/users/login',
   '/adminapi/user/login',
-  '/webapi/view-record'
+  '/webapi/view-record',
+  '/webapi/comment/*'
 ];
 
 // 全局中间件：处理跨域和公共路由
@@ -48,7 +50,12 @@ app.use((req, res, next) => {
   }
 
   // 如果是公共路由，直接放行
-  if (publicRoutes.includes(req.path)) {
+  if (publicRoutes.some(route => {
+    if (route.endsWith('*')) {
+      return req.path.startsWith(route.slice(0, -1));
+    }
+    return route === req.path;
+  })) {
     return next();
   }
 
@@ -59,6 +66,7 @@ app.use('/', indexRouter);
 app.use('/webapi/users', usersRouter);
 
 app.use('/webapi/like', webLikeRouter);
+app.use('/webapi/comment', webCommentRouter);
 app.use(webNewsRouter);
 app.use(webProductRouter);
 app.use(webViewRecordRouter);

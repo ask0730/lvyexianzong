@@ -33,6 +33,39 @@
           </el-divider>
 
           <div v-html="currentNews.content"></div>
+
+          <!-- 评论区 -->
+          <el-divider>评论区</el-divider>
+          
+          <!-- 评论输入框 -->
+          <div class="comment-input" v-if="currentNews._id">
+            <el-input
+              v-model="commentContent"
+              type="textarea"
+              :rows="3"
+              placeholder="请输入您的评论"
+            />
+            <el-button type="primary" @click="submitComment" style="margin-top: 10px">
+              发表评论
+            </el-button>
+          </div>
+
+          <!-- 评论列表 -->
+          <div class="comment-list">
+            <div v-for="comment in comments" :key="comment._id" class="comment-item">
+              <el-avatar :src="comment.userId.avatar ? 'http://localhost:3000' + comment.userId.avatar : ''" :size="40">
+                {{ comment.userId.username?.charAt(0) }}
+              </el-avatar>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="username">{{ comment.userId.username }}</span>
+                  <span class="time">{{ formatTime(comment.createdTime) }}</span>
+                </div>
+                <div class="comment-text">{{ comment.content }}</div>
+              </div>
+            </div>
+            <el-empty v-if="!comments.length" description="暂无评论" />
+          </div>
         </div>
       </el-col>
       <el-col :span="4" :offset="1" :pull="1">
@@ -69,6 +102,8 @@
   const isCollected = ref(false);
   const isLiked = ref(false);
   const likeCount = ref(0);
+  const commentContent = ref('');
+  const comments = ref([]);
 
   const stop = watchEffect(async () => {
     if (!route.params.id) return;
@@ -82,6 +117,7 @@
       checkCollectionStatus();
       checkLikeStatus();
       getLikeCount();
+      getComments();
       // 记录文章浏览
       try {
         await axios.post('/webapi/view-record', {
@@ -241,6 +277,59 @@
   const handleChange = id => {
     router.push(`/news/${id}`);
   };
+
+  // 获取评论列表
+  const getComments = async () => {
+    try {
+      const response = await axios.get(`/webapi/comment/${currentNews.value._id}`);
+      if (response.data.code === 0) {
+        comments.value = response.data.data;
+      }
+    } catch (error) {
+      console.error('获取评论列表失败:', error);
+      ElMessage.error('获取评论列表失败');
+    }
+  };
+
+  // 提交评论
+  const submitComment = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    if (!commentContent.value.trim()) {
+      ElMessage.warning('请输入评论内容');
+      return;
+    }
+
+    try {
+      const response = await axios.post('/webapi/comment/add', 
+        {
+          newsId: currentNews.value._id,
+          content: commentContent.value.trim()
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.code === 0) {
+        ElMessage.success('评论成功');
+        commentContent.value = '';
+        await getComments();
+      } else {
+        ElMessage.error(response.data.message || '评论失败');
+      }
+    } catch (error) {
+      console.error('提交评论失败:', error);
+      ElMessage.error('提交评论失败');
+    }
+  };
   </script>
 
   <style scoped lang="scss">
@@ -257,5 +346,47 @@
 
   .el-button {
     margin-left: 10px;
+  }
+
+  .comment-input {
+    margin: 20px 0;
+  }
+
+  .comment-list {
+    margin-top: 20px;
+  }
+
+  .comment-item {
+    display: flex;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .comment-content {
+    margin-left: 15px;
+    flex: 1;
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+
+    .username {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .time {
+      font-size: 12px;
+      color: #999;
+    }
+  }
+
+  .comment-text {
+    color: #666;
+    line-height: 1.5;
   }
   </style>
