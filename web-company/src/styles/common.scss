@@ -1,3 +1,5 @@
+@use "sass:math";
+
 // 响应式布局断点
 $breakpoints: (
   'xs': 320px,
@@ -113,16 +115,16 @@ $spacers: (
 
 @for $i from 1 through 12 {
   .col-#{$i} {
-    flex: 0 0 percentage($i / 12);
-    max-width: percentage($i / 12);
+    flex: 0 0 percentage(math.div($i, 12));
+    max-width: percentage(math.div($i, 12));
     padding: 0 15px;
   }
   
   @each $breakpoint, $value in $breakpoints {
     .col-#{$breakpoint}-#{$i} {
       @include respond-to($breakpoint) {
-        flex: 0 0 percentage($i / 12);
-        max-width: percentage($i / 12);
+        flex: 0 0 percentage(math.div($i, 12));
+        max-width: percentage(math.div($i, 12));
       }
     }
   }

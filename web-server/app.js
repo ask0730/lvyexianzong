@@ -13,6 +13,7 @@ const ProductRouter = require('./routes/admin/ProductRouter');
 const webNewsRouter = require('./routes/web/NewsRouter');
 const webProductRouter = require('./routes/web/ProductRouter');
 const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
+const webLikeRouter = require('./routes/web/likeRoutes');
 
 var app = express();
 
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/webapi/users', usersRouter);
 
+app.use('/webapi/like', webLikeRouter);
 app.use(webNewsRouter);
 app.use(webProductRouter);
 app.use(webViewRecordRouter);
