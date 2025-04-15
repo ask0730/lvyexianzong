@@ -30,6 +30,11 @@ export const routes: Array<RouteRecordRaw> = [
     component: About,
   },
   {
+    path: '/chat',
+    name: 'chat',
+    component: () => import('@/views/Chat.vue')
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/Login.vue')

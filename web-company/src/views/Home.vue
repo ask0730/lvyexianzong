@@ -1,6 +1,16 @@
 <template>
   <div class="page-container">
     <div class="content">
+      <el-button
+        class="customer-service-btn"
+        type="primary"
+        size="large"
+        round
+        @click="$router.push('/chat')"
+      >
+        <el-icon class="icon"><Service /></el-icon>
+        智能客服
+      </el-button>
       <div class="hero-section">
         <el-carousel height="600px" indicator-position="outside" :interval="5000">
           <el-carousel-item v-for="(img, index) in [img1, img2, img3]" :key="index">
@@ -42,7 +52,7 @@ import img1 from '@/assets/home1.jpg';
 import img2 from '@/assets/home2.jpg';
 import img3 from '@/assets/home3.jpg';
 import Footer from '@/components/Footer.vue';
-import { Sunny, Aim, Trophy } from '@element-plus/icons-vue';
+import { Sunny, Aim, Trophy, Service } from '@element-plus/icons-vue';
 </script>
 
 <style scoped lang="scss">
@@ -56,6 +66,27 @@ import { Sunny, Aim, Trophy } from '@element-plus/icons-vue';
   flex: 1 0 auto;
 }
 
+.customer-service-btn {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+}
 .hero-section {
   position: relative;
   height: 600px;
