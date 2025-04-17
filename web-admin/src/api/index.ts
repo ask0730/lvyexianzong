@@ -21,6 +21,8 @@ export default {
     delete: post('/adminapi/news/delete'), // 删除文章
     update: post('/adminapi/news/update'), // 修改文章
     publish: post('/adminapi/news/publish'), // 文章发布
+    spiderList: post('/adminapi/news/spider/list'), // 爬虫新闻列表
+    spiderDetail: post('/adminapi/news/spider/detail'), // 爬虫新闻详情
   },
   product: {
     add: post('/adminapi/product/add'), // 添加产品
