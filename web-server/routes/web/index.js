@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const AuthMiddleware = require('../../middleware/AuthMiddleware');
+const axios = require('axios');
 
 // 聊天相关路由
-router.post('/chat/send', AuthMiddleware.requireAuth, (req, res) => {
+router.post('/chat/send', AuthMiddleware.requireAuth, async (req, res) => {
     try {
         const { message } = req.body;
         if (!message) {
@@ -13,12 +14,22 @@ router.post('/chat/send', AuthMiddleware.requireAuth, (req, res) => {
             });
         }
 
-        // 这里可以添加聊天消息处理逻辑
-        // 目前先返回一个简单的回复
+        // 调用DeepSeek API
+        const response = await axios.post('https://api.deepseek.com/v1/chat/completions', {
+            model: 'deepseek-chat',
+            messages: [{ role: 'user', content: message }]
+        }, {
+            headers: {
+                'Authorization': 'Bearer sk-328b818462634a4eadb05764b1a106b1',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // 返回AI的回复
         res.json({
             code: 0,
             data: {
-                message: `感谢您的咨询。您说：${message}。我们会尽快处理您的问题。`
+                message: response.data.choices[0].message.content
             }
         });
     } catch (error) {
