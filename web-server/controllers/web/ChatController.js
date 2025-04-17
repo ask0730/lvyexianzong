@@ -37,23 +37,24 @@ class ChatController {
                 messages: [
                     {
                         role: 'system',
-                        content: '你是绿野仙踪科技有限公司的AI客服助手。请以亲切自然的语气与用户交流，理解并回答用户的各类问题。如果用户询问与环保技术和我们公司业务相关的问题，你可以详细介绍我们的专业服务。如果用户询问其他问题，请以礼貌和专业的态度给出合适的回答，帮助用户解决问题或推荐合适的咨询渠道。'
+                        content: '你是绿野仙踪科技有限公司的AI客服助手。请以专业、简洁的方式回答用户问题，重点关注环保技术和可持续发展解决方案。'
                     },
                     ...chat.messages.map(msg => ({
                         role: msg.role,
                         content: msg.content
                     }))
                 ],
-                temperature: 0.9,
-                max_tokens: 2000,
-                top_p: 0.95,
-                frequency_penalty: 0.5,
-                presence_penalty: 0.5
+                temperature: 0.5,
+                max_tokens: 1000,
+                top_p: 0.8,
+                frequency_penalty: 0.1,
+                presence_penalty: 0.1
             }, {
                 headers: {
                     'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 30000
             });
 
             // 添加AI回复
@@ -67,7 +68,17 @@ class ChatController {
             res.json({ code: 0, data: { message: aiResponse } });
         } catch (error) {
             console.error('AI回复错误:', error);
-            res.json({ code: -1, msg: '获取AI回复失败' });
+            let errorMessage = '获取AI回复失败';
+            if (error.response) {
+                if (error.response.status === 429) {
+                    errorMessage = '服务繁忙，请稍后再试';
+                } else if (error.response.status === 401) {
+                    errorMessage = 'API认证失败，请联系管理员';
+                }
+            } else if (error.code === 'ECONNABORTED') {
+                errorMessage = '请求超时，请重试';
+            }
+            res.json({ code: -1, msg: errorMessage });
         }
     }
 
