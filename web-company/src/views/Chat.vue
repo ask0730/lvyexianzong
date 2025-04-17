@@ -56,6 +56,15 @@ const scrollToBottom = async () => {
 const sendMessage = async () => {
   if (!inputMessage.value.trim()) return;
 
+  const token = localStorage.getItem('token');
+  if (!token) {
+    messages.value.push({
+      content: '请先登录后再继续对话。',
+      type: 'bot'
+    });
+    return;
+  }
+
   // 添加用户消息
   messages.value.push({
     content: inputMessage.value,
@@ -68,15 +77,52 @@ const sendMessage = async () => {
 
   await scrollToBottom();
 
-  // 模拟API响应延迟
-  setTimeout(() => {
+  try {
+    const response = await fetch('http://localhost:8081/webapi/chat/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        message: userQuestion
+      })
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        messages.value.push({
+          content: '登录已过期，请重新登录后继续对话。',
+          type: 'bot'
+        });
+        return;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.code === 0) {
+      messages.value.push({
+        content: data.data.message,
+        type: 'bot'
+      });
+    } else {
+      messages.value.push({
+        content: '抱歉，服务出现了一些问题，请稍后再试。',
+        type: 'bot'
+      });
+    }
+  } catch (error) {
+    console.error('发送消息失败:', error);
     messages.value.push({
-      content: '感谢您的咨询。我们的客服人员会尽快处理您的问题。如果您需要更快的响应，请拨打我们的服务热线：400-XXX-XXXX',
+      content: '网络连接出现问题，请检查您的网络连接后重试。',
       type: 'bot'
     });
+  } finally {
     loading.value = false;
-    scrollToBottom();
-  }, 1000);
+    await scrollToBottom();
+  }
 };
 </script>
 
