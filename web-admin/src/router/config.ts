@@ -50,10 +50,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/product-manage/ProductEdit.vue'),
   },
   {
-    path: '/news-manage/spidernewslist',
-    component: () => import('@/views/news-manage/SpiderNewsList.vue'),
-  },
-  {
     path: '/',
     redirect: '/index',
   },
