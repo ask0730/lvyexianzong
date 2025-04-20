@@ -16,6 +16,7 @@ const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
 const webLikeRouter = require('./routes/web/likeRoutes');
 const webCommentRouter = require('./routes/web/commentRouter');
 const webChatRouter = require('./routes/web/index');
+const crawlerRouter = require('./routes/crawler/index');
 
 var app = express();
 
@@ -36,7 +37,8 @@ const publicRoutes = [
   '/adminapi/user/login',
   '/webapi/view-record',
   '/webapi/comment/*',
-  '/webapi/chat/send'
+  '/webapi/chat/send',
+  '/api/spider-news'
 ];
 
 // 全局中间件：处理跨域和公共路由
@@ -73,6 +75,7 @@ app.use(webNewsRouter);
 app.use(webProductRouter);
 app.use(webViewRecordRouter);
 app.use('/webapi', webChatRouter);
+app.use('/', crawlerRouter);
 
 /*
  * /adminapi - 后台系统用的
