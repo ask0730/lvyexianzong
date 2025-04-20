@@ -18,13 +18,33 @@ class AgricultureNewsCrawler {
     // 配置新闻源
     this.sources = [
       {
-        name: '中国农业新闻网',
-        url: 'http://www.farmer.com.cn/xwpd/news1/',
+        name: '中国农业农村部',
+        url: 'http://www.moa.gov.cn/xw/zwdt/',
         selector: {
-          list: '.list_con ul li',
+          list: '.pub-media1-txt-list li',
           title: 'a',
           link: 'a',
           date: 'span'
+        }
+      },
+      {
+        name: '农民日报',
+        url: 'http://szb.farmer.com.cn',
+        selector: {
+          list: '.news-list li',
+          title: '.title',
+          link: '.title a',
+          date: '.date'
+        }
+      },
+      {
+        name: '中国农业信息网',
+        url: 'http://www.agri.cn/V20/xwzx/',
+        selector: {
+          list: '.newslist li',
+          title: 'a',
+          link: 'a',
+          date: '.date'
         }
       }
     ];
