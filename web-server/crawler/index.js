@@ -22,6 +22,21 @@ class SpiderNewsService {
     }
   }
 
+  async initialize() {
+    await this.initDatabase();
+    console.log('爬虫服务初始化成功');
+  }
+
+  async crawl() {
+    try {
+      await this.fetchNewsPage();
+      console.log('爬虫任务执行成功');
+    } catch (error) {
+      console.error('爬虫任务执行失败:', error);
+      throw error;
+    }
+  }
+
   async fetchNewsPage(page = 1) {
     try {
       const response = await axios.get(`${this.baseUrl}/xw/zwdt/`);
@@ -79,7 +94,6 @@ class SpiderNewsService {
       newsList.push(news);
     });
 
-
     return newsList;
   }
 
@@ -112,6 +126,11 @@ class SpiderNewsService {
         error: error.message
       };
     }
+  }
+
+  async stop() {
+    // 清理资源或执行停止操作
+    console.log('爬虫服务停止');
   }
 }
 

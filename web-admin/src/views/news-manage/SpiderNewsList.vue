@@ -4,6 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>爬虫新闻列表</span>
+          <el-button type="primary" @click="startCrawler" :loading="crawlerLoading">开始爬虫</el-button>
         </div>
       </template>
       
@@ -138,6 +139,24 @@ const handleCurrentChange = (val: number) => {
 onMounted(() => {
   getNewsList()
 })
+
+const crawlerLoading = ref(false)
+
+// 启动爬虫
+const startCrawler = async () => {
+  try {
+    crawlerLoading.value = true
+    await request.post('/spider-news/start-crawler')
+    ElMessage.success('爬虫任务已启动')
+    // 刷新列表
+    getNewsList()
+  } catch (error) {
+    console.error('启动爬虫失败:', error)
+    ElMessage.error('启动爬虫失败')
+  } finally {
+    crawlerLoading.value = false
+  }
+}
 </script>
 
 <style scoped>
