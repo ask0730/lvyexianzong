@@ -5,7 +5,7 @@
                 <h3>联系我们</h3>
                 <p>电话：400-888-8888</p>
                 <p>邮箱：contact@company.com</p>
-                <p>地址：北京市朝阳区xxx大厦</p>
+                <p>地址：天津职业技术师范大学</p>
             </div>
 
             <div class="footer-section">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2024 绿野仙踪科技有限公司. All Rights Reserved.</p>
+            <p>© 2025 绿野仙踪团队. All Rights Reserved.</p>
         </div>
     </footer>
 </template>

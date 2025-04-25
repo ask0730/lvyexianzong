@@ -10,10 +10,10 @@
 
             <div class="about-content">
                 <section class="company-intro">
-                    <h2>公司简介</h2>
+                    <h2>团队简介</h2>
                     <div class="section-content">
-                        <!-- <img src="@/assets/about/company.jpg" alt="公司照片"> -->
-                        <p>绿野仙踪科技有限公司成立于2020年，是一家专注于环保科技创新的高新技术企业。我们致力于通过技术创新推动环境保护，为建设美丽中国贡献力量。</p>
+                        <!-- <img src="@/assets/about/company.jpg" alt="团队照片"> -->
+                        <p>绿野仙踪科技有限团队成立于2020年，是一家专注于环保科技创新的高新技术企业。我们致力于通过技术创新推动环境保护，为建设美丽中国贡献力量。</p>
                     </div>
                 </section>
 
@@ -21,17 +21,23 @@
                     <h2>企业文化</h2>
                     <div class="culture-grid">
                         <div class="culture-item">
-                            <el-icon><Aim /></el-icon>
+                            <el-icon>
+                                <Aim />
+                            </el-icon>
                             <h3>愿景</h3>
                             <p>成为环保科技领域的引领者</p>
                         </div>
                         <div class="culture-item">
-                            <el-icon><Trophy /></el-icon>
+                            <el-icon>
+                                <Trophy />
+                            </el-icon>
                             <h3>使命</h3>
                             <p>用科技守护绿水青山</p>
                         </div>
                         <div class="culture-item">
-                            <el-icon><Setting /></el-icon>
+                            <el-icon>
+                                <Setting />
+                            </el-icon>
                             <h3>价值观</h3>
                             <p>创新、责任、协作、共赢</p>
                         </div>
@@ -43,7 +49,9 @@
                     <div class="advantage-list">
                         <div class="advantage-item">
                             <div class="icon-wrapper">
-                                <el-icon><Monitor /></el-icon>
+                                <el-icon>
+                                    <Monitor />
+                                </el-icon>
                             </div>
                             <div class="text-content">
                                 <h3>技术创新</h3>
@@ -52,7 +60,9 @@
                         </div>
                         <div class="advantage-item">
                             <div class="icon-wrapper">
-                                <el-icon><User /></el-icon>
+                                <el-icon>
+                                    <User />
+                                </el-icon>
                             </div>
                             <div class="text-content">
                                 <h3>专业团队</h3>
@@ -61,7 +71,9 @@
                         </div>
                         <div class="advantage-item">
                             <div class="icon-wrapper">
-                                <el-icon><Service /></el-icon>
+                                <el-icon>
+                                    <Service />
+                                </el-icon>
                             </div>
                             <div class="text-content">
                                 <h3>优质服务</h3>
@@ -75,15 +87,21 @@
                     <h2>联系我们</h2>
                     <div class="contact-info">
                         <div class="info-item">
-                            <el-icon><Location /></el-icon>
-                            <span>地址：北京市朝阳区xxx大厦</span>
+                            <el-icon>
+                                <Location />
+                            </el-icon>
+                            <span>地址：天津职业技术师范大学</span>
                         </div>
                         <div class="info-item">
-                            <el-icon><Phone /></el-icon>
+                            <el-icon>
+                                <Phone />
+                            </el-icon>
                             <span>电话：400-888-8888</span>
                         </div>
                         <div class="info-item">
-                            <el-icon><Message /></el-icon>
+                            <el-icon>
+                                <Message />
+                            </el-icon>
                             <span>邮箱：contact@company.com</span>
                         </div>
                     </div>
