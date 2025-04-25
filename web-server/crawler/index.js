@@ -125,7 +125,7 @@ class SpiderNewsService {
                 await NewsModel.create({
                     title: news.title,
                     content: content || news.summary,
-                    publishDate: news.publishTime, // 确保 publishDate 字段被正确传递
+                    publishDate: news.publishTime,
                     source: news.source,
                     url: news.url,
                     isPublish: 1,
@@ -160,14 +160,41 @@ class SpiderNewsService {
 
     // 提取新闻内容
     extractContent($) {
-        return $('.zwgk_content, .TRS_Editor, .article-content')
-           .map((i, el) => $(el).html())
+        // 移除包含 .TRS_Editor 的样式规则
+        $('style').each((i, style) => {
+            let styleText = $(style).text();
+            styleText = styleText.replace(/\.TRS_Editor[^{]*\{[^}]*\}/g, '');
+            $(style).text(styleText);
+        });
+
+        // 移除所有内联样式
+        $('*').removeAttr('style');
+
+        // 获取主要内容区域
+        let content = $('.zwgk_content, .TRS_Editor, .article-content')
+           .map((i, el) => {
+                const $el = $(el);
+                // 获取文本内容
+                return $el.text();
+            })
            .toArray()
-           .join('')
-           .replace(/<\/?[^>]+>/g, '')
+           .join('\n')
            .replace(/\s{2,}/g, ' ')
-           .trim() ||
-            $('body').text().replace(/\s+/g, ' ').trim();
+           .trim();
+
+        // 如果没有找到主要内容，则尝试获取body内容
+        if (!content) {
+            content = $('body')
+               .clone()
+               .find('style,script,link')
+               .remove()
+               .end()
+               .text()
+               .replace(/\s+/g, ' ')
+               .trim();
+        }
+
+        return content || '内容解析失败';
     }
 
     // 获取新闻列表（支持分页）
