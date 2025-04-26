@@ -36,7 +36,8 @@ const NewsController = {
     });
   },
   getList: async (req, res) => {
-    const result = await NewsService.getList({ _id: req.body._id });
+    const { _id, page, pageSize } = req.body;
+    const result = await NewsService.getList({ _id, page, pageSize });
     res.send({
       code: 0,
       data: result,

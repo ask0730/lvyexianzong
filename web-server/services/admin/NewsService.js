@@ -39,9 +39,21 @@ const NewsService = {
     }
   },
 
-  getList: async ({ _id }) => {
-    return _id ? NewsModel.find({ _id }) : NewsModel.find({});
+  getList: async ({ _id, page = 1, pageSize = 10 }) => {
+    if (_id) {
+      return NewsModel.find({ _id });
+    }
+    const total = await NewsModel.countDocuments();
+    const list = await NewsModel.find()
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ editTime: -1 });
+    return {
+      list,
+      total
+    };
   },
+
   delList: async ({ _id }) => {
     return NewsModel.deleteOne({
       _id,
