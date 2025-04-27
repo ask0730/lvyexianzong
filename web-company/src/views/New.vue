@@ -28,6 +28,11 @@
 
                 <div v-html="currentNews.content"></div>
 
+                <!-- 新增字数显示区域 -->
+                <div class="word-count">
+                    本文字数：{{ contentWordCount }} 字
+                </div>
+
                 <!-- 评论区 -->
                 <el-divider>评论区</el-divider>
 
@@ -71,8 +76,8 @@
     </el-row>
 </template>
 
-  <script setup>
-import { ref, watchEffect, onBeforeUnmount } from 'vue'
+<script setup>
+import { ref, watchEffect, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { StarFilled, Star, Pointer } from '@element-plus/icons-vue'
 import { formatTime } from '@/utils'
@@ -89,6 +94,14 @@ const isLiked = ref(false)
 const likeCount = ref(0)
 const commentContent = ref('')
 const comments = ref([])
+
+// 新增计算属性：文章内容字数
+const contentWordCount = computed(() => {
+    const content = currentNews.value.content || '';
+    // 正则表达式去除所有HTML标签，保留纯文本
+    const pureText = content.replace(/<[^>]*>/g, '').trim(); 
+    return pureText.length; // 返回字数（包括中英文、数字、符号）
+});
 
 const stop = watchEffect(async () => {
     if (!route.params.id) return
@@ -318,7 +331,7 @@ const submitComment = async () => {
 }
 </script>
 
-  <style scoped lang="scss">
+<style scoped lang="scss">
 .el-row {
     margin-top: 30px;
 }
@@ -375,4 +388,11 @@ const submitComment = async () => {
     color: #666;
     line-height: 1.5;
 }
-</style>
+
+.word-count {
+    font-size: 14px;
+    color: #666;
+    margin: 15px 0;
+    text-align: right; /* 靠右显示 */
+}
+</style>    
