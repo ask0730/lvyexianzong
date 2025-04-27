@@ -9,7 +9,7 @@ const newsSchema = new mongoose.Schema({
     publishDate: { type: String, required: true },
     source: { type: String, default: '中国农业农村部' },
     url: { type: String, unique: true, required: true },
-    isPublish: { type: Number, default: 1 },
+    isPublish: { type: Number, default: 0 },
     editTime: { type: Date, default: Date.now }
 });
 
@@ -128,7 +128,7 @@ class SpiderNewsService {
                     publishDate: news.publishTime,
                     source: news.source,
                     url: news.url,
-                    isPublish: 1,
+                    isPublish: 0,
                     editTime: new Date()
                 });
                 console.log(`保存成功：${news.title}`);
