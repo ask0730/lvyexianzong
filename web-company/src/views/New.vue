@@ -1,4 +1,17 @@
 <template>
+    <div class="flower-container">
+        <div v-for="n in 30" :key="n" 
+             class="flower"
+             :style="{
+                 left: Math.random() * 100 + '%',
+                 top: -20 + 'px',
+                 width: 10 + Math.random() * 10 + 'px',
+                 height: 10 + Math.random() * 10 + 'px',
+                 animationDuration: 5 + Math.random() * 5 + 's',
+                 animationDelay: Math.random() * 5 + 's'
+             }">
+        </div>
+    </div>
     <el-row>
         <el-col :span="17" :offset="1">
             <div>
@@ -332,6 +345,55 @@ const submitComment = async () => {
 </script>
 
 <style scoped lang="scss">
+/* 飘花特效容器 */
+.flower-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.flower {
+    position: absolute;
+    background: rgba(3, 145, 57, 0.514)
+    border-radius: 50%;
+    animation: fall linear infinite;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: inherit;
+        transform: rotate(45deg);
+    }
+    
+    &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: inherit;
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes fall {
+    0% {
+        transform: translate(0, -10%) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100px, 100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
 .el-row {
     margin-top: 30px;
 }
@@ -395,4 +457,4 @@ const submitComment = async () => {
     margin: 15px 0;
     text-align: right; /* 靠右显示 */
 }
-</style>    
+</style>
