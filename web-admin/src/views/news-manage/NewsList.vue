@@ -31,6 +31,17 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <div class="pagination-container">
+                <el-pagination
+                    v-model:current-page="currentPage"
+                    v-model:page-size="pageSize"
+                    :page-sizes="[10, 20, 30, 50]"
+                    :total="total"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    @size-change="handleSizeChange"
+                    @current-change="handlePageChange"
+                />
+            </div>
         </el-card>
 
         <el-dialog v-model="dialogVisible" title="预览文章" width="50%">
@@ -60,15 +71,34 @@ const router = useRouter()
 const tableData = ref([])
 const previewData: any = ref({})
 const dialogVisible = ref(false)
+const total = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(10)
+
 onMounted(() => {
     getTableData()
 })
 
 const getTableData = async () => {
-    const res = await API.news.list({})
+    const res = await API.news.list({
+        page: currentPage.value,
+        pageSize: pageSize.value
+    })
     if (res.code === 0) {
-        tableData.value = res.data
+        tableData.value = res.data.list
+        total.value = res.data.total
     }
+}
+
+const handlePageChange = (page: number) => {
+    currentPage.value = page
+    getTableData()
+}
+
+const handleSizeChange = (size: number) => {
+    pageSize.value = size
+    currentPage.value = 1
+    getTableData()
 }
 
 //格式化分类信息
@@ -111,6 +141,12 @@ const handleEdit = (item: any) => {
 <style lang="scss" scoped>
 .el-table {
     margin-top: 50px;
+}
+
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 ::v-deep .htmlcontent {

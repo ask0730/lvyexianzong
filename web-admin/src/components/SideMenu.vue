@@ -34,6 +34,7 @@
                 </template>
                 <el-menu-item index="/news-manage/addnews">创建文章</el-menu-item>
                 <el-menu-item index="/news-manage/newslist">文章列表</el-menu-item>
+                <el-menu-item index="/news-manage/spiderlist">爬虫列表</el-menu-item>
             </el-sub-menu>
 
             <el-sub-menu index="/product-manage">
