@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const UserModel = require('../models/UserModel');
 const JWT = require('../utils/JWT');
+const PasswordEncryption = require('../utils/PasswordEncryption');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -35,10 +36,13 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // 加密密码
+    const hashedPassword = await PasswordEncryption.encrypt(password);
+
     // 创建新用户
     const newUser = new UserModel({
       username,
-      password,
+      password: hashedPassword,
       email,
       role: 2, // 默认普通用户
       gender: 0, // 默认未知性别
@@ -107,7 +111,16 @@ router.post('/login', async (req, res) => {
     const user = await UserModel.findOne({ username });
 
     // 验证用户和密码
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ 
+        code: 1,
+        message: '用户名或密码错误' 
+      });
+    }
+
+    // 验证密码
+    const isPasswordValid = await PasswordEncryption.verify(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ 
         code: 1,
         message: '用户名或密码错误' 

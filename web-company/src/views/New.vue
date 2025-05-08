@@ -1,4 +1,17 @@
 <template>
+    <div class="flower-container">
+        <div v-for="n in 30" :key="n" 
+             class="flower"
+             :style="{
+                 left: Math.random() * 100 + '%',
+                 top: -20 + 'px',
+                 width: 10 + Math.random() * 10 + 'px',
+                 height: 10 + Math.random() * 10 + 'px',
+                 animationDuration: 5 + Math.random() * 5 + 's',
+                 animationDelay: Math.random() * 5 + 's'
+             }">
+        </div>
+    </div>
     <el-row>
         <el-col :span="17" :offset="1">
             <div>
@@ -27,6 +40,11 @@
                 </el-divider>
 
                 <div v-html="currentNews.content"></div>
+
+                <!-- 新增字数显示区域 -->
+                <div class="word-count">
+                    本文字数：{{ contentWordCount }} 字
+                </div>
 
                 <!-- 评论区 -->
                 <el-divider>评论区</el-divider>
@@ -71,8 +89,8 @@
     </el-row>
 </template>
 
-  <script setup>
-import { ref, watchEffect, onBeforeUnmount } from 'vue'
+<script setup>
+import { ref, watchEffect, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { StarFilled, Star, Pointer } from '@element-plus/icons-vue'
 import { formatTime } from '@/utils'
@@ -89,6 +107,14 @@ const isLiked = ref(false)
 const likeCount = ref(0)
 const commentContent = ref('')
 const comments = ref([])
+
+// 新增计算属性：文章内容字数
+const contentWordCount = computed(() => {
+    const content = currentNews.value.content || '';
+    // 正则表达式去除所有HTML标签，保留纯文本
+    const pureText = content.replace(/<[^>]*>/g, '').trim(); 
+    return pureText.length; // 返回字数（包括中英文、数字、符号）
+});
 
 const stop = watchEffect(async () => {
     if (!route.params.id) return
@@ -318,7 +344,56 @@ const submitComment = async () => {
 }
 </script>
 
-  <style scoped lang="scss">
+<style scoped lang="scss">
+/* 飘花特效容器 */
+.flower-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.flower {
+    position: absolute;
+    background: rgba(3, 145, 57, 0.514)
+    border-radius: 50%;
+    animation: fall linear infinite;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: inherit;
+        transform: rotate(45deg);
+    }
+    
+    &::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: inherit;
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes fall {
+    0% {
+        transform: translate(0, -10%) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(100px, 100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
 .el-row {
     margin-top: 30px;
 }
@@ -374,5 +449,12 @@ const submitComment = async () => {
 .comment-text {
     color: #666;
     line-height: 1.5;
+}
+
+.word-count {
+    font-size: 14px;
+    color: #666;
+    margin: 15px 0;
+    text-align: right; /* 靠右显示 */
 }
 </style>

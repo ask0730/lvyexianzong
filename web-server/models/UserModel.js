@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const PasswordEncryption = require('../utils/PasswordEncryption');
 
 // user模型===>users集合
 const UserType = {
@@ -13,8 +14,7 @@ const UserType = {
   password: { 
     type: String, 
     required: true,
-    minlength: 6,
-    maxlength: 20
+    minlength: 6
   },
   gender: { 
     type: Number, 
@@ -48,6 +48,28 @@ const UserType = {
 };
 
 const UserSchema = new Schema(UserType);
+
+// 添加静态方法用于初始化管理员账号
+UserSchema.statics.initAdminAccount = async function() {
+  try {
+    // 检查是否已存在admin账号
+    const adminExists = await this.findOne({ username: 'admin' });
+    if (!adminExists) {
+      // 创建admin账号
+      const hashedPassword = await PasswordEncryption.encrypt('admin');
+      await this.create({
+        username: 'admin',
+        password: hashedPassword,
+        email: 'admin@example.com',
+        role: 1, // 管理员角色
+        gender: 0
+      });
+      console.log('管理员账号初始化成功');
+    }
+  } catch (error) {
+    console.error('管理员账号初始化失败:', error);
+  }
+};
 
 const UserModel = mongoose.model('user', UserSchema);
 
