@@ -359,7 +359,7 @@ const submitComment = async () => {
 
 .flower {
     position: absolute;
-    background: rgba(3, 145, 57, 0.514);
+    background: rgba(102, 236, 154, 0.514);
     border-radius: 50%;
     animation: fall linear infinite;
     
