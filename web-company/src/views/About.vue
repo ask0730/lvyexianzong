@@ -10,15 +10,15 @@
 
             <div class="about-content">
                 <section class="company-intro">
-                    <h2>团队简介</h2>
+                    <h2>平台简介</h2>
                     <div class="section-content">
                         <!-- <img src="@/assets/about/company.jpg" alt="团队照片"> -->
-                        <p>绿野仙踪团队成立于2020年，专注于环保科技创新的高新技术。我们致力于通过技术创新推动环境保护，为建设美丽中国贡献力量。</p>
+                        <p>绿野仙踪平台搭建于2020年，专注于环保科技创新的高新技术，为建设美丽中国贡献力量。希望以后越做越好！</p>
                     </div>
                 </section>
 
                 <section class="company-culture">
-                    <h2>企业文化</h2>
+                    <h2>文化</h2>
                     <div class="culture-grid">
                         <div class="culture-item">
                             <el-icon>
@@ -45,7 +45,7 @@
                 </section>
 
                 <section class="company-advantage">
-                    <h2>我们的优势</h2>
+                    <h2>优势</h2>
                     <div class="advantage-list">
                         <div class="advantage-item">
                             <div class="icon-wrapper">
@@ -55,7 +55,7 @@
                             </div>
                             <div class="text-content">
                                 <h3>技术创新</h3>
-                                <p>拥有多项自主知识产权，持续推动技术创新</p>
+                                <p>了解多项知识产权，持续推动技术创新</p>
                             </div>
                         </div>
                         <div class="advantage-item">
@@ -65,8 +65,8 @@
                                 </el-icon>
                             </div>
                             <div class="text-content">
-                                <h3>专业团队</h3>
-                                <p>汇聚行业精英，打造专业技术团队</p>
+                                <h3>专业知识</h3>
+                                <p>学习行业知识，打造专业平台</p>
                             </div>
                         </div>
                         <div class="advantage-item">

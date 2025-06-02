@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2025 绿野仙踪团队. All Rights Reserved.</p>
+            <p>© 2025 绿野仙踪. All Rights Reserved.</p>
         </div>
     </footer>
 </template>
