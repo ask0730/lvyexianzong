@@ -17,7 +17,7 @@
                 <div class="more">
                   <span class="more-text">更多信息，请添加：</span>
                   <br />
-                  <a href="xxxxxx" target="_blank" class="more-link">xxxxxx</a>
+                  <a href="xxxxxx" target="_blank" class="more-link">123456</a>
                 </div>
               </el-card>
             </div>
