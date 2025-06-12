@@ -4,7 +4,6 @@
       <div class="product-section">
         <el-carousel height="600px" direction="vertical" :autoplay="true" :interval="5000" v-if="looplist.length">
           <el-carousel-item v-for="item in looplist" :key="item._id">
-<!--            <div class="item" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }">-->
             <div class="item">
             <div class="overlay"></div>
               <el-card class="box-card">
@@ -76,7 +75,6 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
   backdrop-filter: blur(3px);
   transition: all 0.5s ease;
 }
