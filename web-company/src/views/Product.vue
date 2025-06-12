@@ -2,10 +2,9 @@
   <div class="page-container">
     <div class="content">
       <div class="product-section">
-        <el-carousel height="600px" direction="vertical" :autoplay="true" :interval="5000" v-if="looplist.length">
-          <el-carousel-item v-for="item in looplist" :key="item._id">
+        <div v-if="looplist.length">
+          <div v-for="item in looplist" :key="item._id">
             <div class="item">
-            <div class="overlay"></div>
               <el-card class="box-card">
                 <template #header>
                   <div class="card-header">
@@ -17,8 +16,8 @@
                 <div class="imgs" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }"></div>
               </el-card>
             </div>
-          </el-carousel-item>
-        </el-carousel>
+          </div>
+        </div>
         <el-empty description="暂无产品" v-else />
       </div>
     </div>
@@ -55,8 +54,7 @@ onMounted(async () => {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 5%;
+  justify-content: center;
   animation: fadeIn 1s ease-out;
 }
 
@@ -69,25 +67,15 @@ onMounted(async () => {
   }
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: blur(3px);
-  transition: all 0.5s ease;
-}
-
 .box-card {
-  width: 45%;
-  max-height: 80%;
+  width: 90%;
+  height: 20%;
   overflow-y: auto;
   background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px);
   border: none;
   border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  margin-bottom: 20px;
   position: relative;
   z-index: 1;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -114,15 +102,11 @@ onMounted(async () => {
     @media (max-width: 768px) {
       transform: scale(1.03);
     }
-
-    .card-header h2 {
-      color: #409EFF;
-    }
   }
 
   .card-header h2 {
     margin: 0;
-    color: #2c3e50;
+    //color: #2c3e50;
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.5px;
