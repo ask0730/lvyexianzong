@@ -3,7 +3,7 @@
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>爬虫新闻列表</span>
+          <span>爬虫文章列表</span>
           <el-button type="primary" @click="startCrawler" :loading="crawlerLoading">开始爬虫</el-button>
         </div>
       </template>
