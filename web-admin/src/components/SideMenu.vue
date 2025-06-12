@@ -46,7 +46,7 @@
                 </template>
                 <el-menu-item index="/product-manage/addproduct">添加产品</el-menu-item>
                 <el-menu-item index="/product-manage/productlist">产品列表</el-menu-item>
-                <el-menu-item index="/product-manage/productlist">爬虫列表</el-menu-item>
+                <el-menu-item index="/product-manage/spiderlist">爬虫列表</el-menu-item>
             </el-sub-menu>
         </el-menu>
     </el-aside>

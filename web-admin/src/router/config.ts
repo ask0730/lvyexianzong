@@ -49,6 +49,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/product-manage/ProductList.vue'),
   },
   {
+    path: '/product-manage/spiderlist',
+    component: () => import('@/views/product-manage/Spiderlist.vue'),
+  },
+  {
     path: '/product-manage/editproduct/:id',
     component: () => import('@/views/product-manage/ProductEdit.vue'),
   },
