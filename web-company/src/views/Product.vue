@@ -4,8 +4,9 @@
       <div class="product-section">
         <el-carousel height="600px" direction="vertical" :autoplay="true" :interval="5000" v-if="looplist.length">
           <el-carousel-item v-for="item in looplist" :key="item._id">
-            <div class="item" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }">
-              <div class="overlay"></div>
+<!--            <div class="item" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }">-->
+            <div class="item">
+            <div class="overlay"></div>
               <el-card class="box-card">
                 <template #header>
                   <div class="card-header">
@@ -14,11 +15,7 @@
                 </template>
                 <div class="introduction">{{ item.introduction }}</div>
                 <div class="detail">{{ item.detail }}</div>
-                <div class="more">
-                  <span class="more-text">更多信息，请添加：</span>
-                  <br />
-                  <a href="xxxxxx" target="_blank" class="more-link">123456</a>
-                </div>
+                <div class="imgs" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }"></div>
               </el-card>
             </div>
           </el-carousel-item>
@@ -166,34 +163,20 @@ onMounted(async () => {
       margin: 15px 0;
     }
   }
-
-  .more {
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px 0;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    animation: slideUp 0.6s ease-out 0.9s both;
-
-    .more-text {
-      color: #2c3e50;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .more-link {
-      display: inline-block;
-      margin-top: 10px;
-      color: #409EFF;
-      font-size: 18px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-
-      &:hover {
-        color: #66b1ff;
-        transform: translateY(-2px);
-      }
-    }
+  .imgs{
+    width: 200px;
+    height:200px;
+    //width: 100%;
+    //height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5%;
+    animation: fadeIn 1s ease-out;
   }
 }
 
