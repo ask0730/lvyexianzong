@@ -9,6 +9,12 @@
                         </el-icon>
                     </template>
                 </el-input>
+                <div class="sort-section">
+                    <el-radio-group v-model="sortType" size="default" @change="handleSortChange">
+                        <el-radio-button label="publish">发布顺序</el-radio-button>
+                        <el-radio-button label="likes">点赞量顺序</el-radio-button>
+                    </el-radio-group>
+                </div>
             </div>
             <div class="product-section">
                 <div v-if="filteredProducts.length">
@@ -49,6 +55,7 @@ import { Search } from '@element-plus/icons-vue'
 
 const looplist: any = ref([])
 const searchQuery = ref('')
+const sortType = ref('publish')
 
 // 生成随机点赞数
 const generateRandomLikes = () => Math.floor(Math.random() * 1000)
@@ -71,6 +78,15 @@ const handleLike = async (item: any) => {
     }
 }
 
+// 处理排序变化
+const handleSortChange = () => {
+    if (sortType.value === 'likes') {
+        looplist.value.sort((a: any, b: any) => b.likes - a.likes)
+    } else {
+        looplist.value.sort((a: any, b: any) => new Date(b.publishTime).getTime() - new Date(a.publishTime).getTime())
+    }
+}
+
 // 搜索处理
 const handleSearch = () => {
     // 可以在这里添加防抖逻辑
@@ -78,10 +94,17 @@ const handleSearch = () => {
 
 // 过滤产品列表
 const filteredProducts = computed(() => {
-    if (!searchQuery.value) return looplist.value
+    let products = looplist.value
+    if (sortType.value === 'likes') {
+        products = [...products].sort((a: any, b: any) => b.likes - a.likes)
+    } else {
+        products = [...products].sort((a: any, b: any) => new Date(b.publishTime).getTime() - new Date(a.publishTime).getTime())
+    }
+
+    if (!searchQuery.value) return products
 
     const query = searchQuery.value.toLowerCase()
-    return looplist.value.filter(
+    return products.filter(
         (item: any) =>
             item.title.toLowerCase().includes(query) ||
             item.introduction.toLowerCase().includes(query) ||
@@ -97,6 +120,7 @@ onMounted(async () => {
             isLiked: false,
             likeLoading: false,
             likes: generateRandomLikes(),
+            publishTime: item.publishTime || new Date().toISOString(), // 确保有发布时间
         }))
     }
 })
@@ -106,9 +130,35 @@ onMounted(async () => {
 .search-section {
     padding: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
     background-color: #f5f7fa;
     margin-bottom: 20px;
+}
+
+.sort-section {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+:deep(.el-radio-group) {
+    display: flex;
+    gap: 10px;
+}
+
+:deep(.el-radio-button__inner) {
+    border-radius: 20px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+}
+
+:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+    background-color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
+    box-shadow: -1px 0 0 0 var(--el-color-primary);
 }
 
 .search-input {
