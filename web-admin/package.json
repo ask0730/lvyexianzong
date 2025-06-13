@@ -13,6 +13,7 @@
     "@tsparticles/vue3": "^3.0.1",
     "animate.css": "^4.1.1",
     "axios": "^1.7.2",
+    "echarts-wordcloud": "^2.1.0",
     "element-plus": "^2.7.5",
     "moment": "^2.30.1",
     "normalize.css": "^8.0.1",
