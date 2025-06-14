@@ -136,7 +136,23 @@ const handleLike = async (item: any) => {
 // 更新推荐
 const updateRecommendations = (product: any) => {
     const recommender = new Recommender(looplist.value)
-    recommendedProducts.value = recommender.getRecommendations(product.id)
+    // 协同过滤推荐
+    const cfRecommendations = recommender.getRecommendations(product.id) || []
+    // 热门推荐（排除当前产品）
+    const hotRecommendations = looplist.value
+        .filter((item) => item.id !== product.id)
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 5)
+    // 合并去重
+    const merged = [...cfRecommendations, ...hotRecommendations]
+    const uniqueMap = new Map()
+    merged.forEach((item) => {
+        if (!uniqueMap.has(item.id)) {
+            uniqueMap.set(item.id, item)
+        }
+    })
+    // 只取前三个
+    recommendedProducts.value = Array.from(uniqueMap.values()).slice(0, 3)
 }
 
 // 选择产品
