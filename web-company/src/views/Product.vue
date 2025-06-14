@@ -16,30 +16,52 @@
                     </el-radio-group>
                 </div>
             </div>
+
             <div class="product-section">
-                <div v-if="filteredProducts.length">
-                    <div v-for="item in filteredProducts" :key="item._id">
-                        <div class="item">
-                            <el-card class="box-card">
-                                <template #header>
-                                    <div class="card-header">
-                                        <h2>{{ item.title }}</h2>
-                                    </div>
-                                </template>
-                                <div class="introduction">{{ item.introduction }}</div>
-                                <div class="detail">{{ item.detail }}</div>
-                                <div class="imgs" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }"></div>
-                                <div class="like-section">
-                                    <el-button :class="['like-button', { 'is-liked': item.isLiked }]" @click="handleLike(item)" :loading="item.likeLoading">
-                                        <i class="el-icon-like" :class="{ 'is-liked': item.isLiked }"></i>
-                                        <span class="like-count">{{ item.likes }}</span>
-                                    </el-button>
+                <div v-if="filteredProducts.length" class="products-grid">
+                    <div v-for="item in filteredProducts" :key="item._id" class="product-item" @click="selectProduct(item)">
+                        <el-card class="box-card" :class="{ 'selected': selectedProduct?.id === item.id }">
+                            <template #header>
+                                <div class="card-header">
+                                    <h2>{{ item.title }}</h2>
                                 </div>
-                            </el-card>
-                        </div>
+                            </template>
+                            <div class="introduction">{{ item.introduction }}</div>
+                            <div class="detail">{{ item.detail }}</div>
+                            <div class="imgs" :style="{ backgroundImage: `url(http://localhost:3000${item.cover})` }"></div>
+                            <div class="like-section">
+                                <el-button :class="['like-button', { 'is-liked': item.isLiked }]" @click.stop="handleLike(item)" :loading="item.likeLoading">
+                                    <i class="el-icon-like" :class="{ 'is-liked': item.isLiked }"></i>
+                                    <span class="like-count">{{ item.likes }}</span>
+                                </el-button>
+                            </div>
+                        </el-card>
                     </div>
                 </div>
                 <el-empty description="暂无产品" v-else />
+            </div>
+
+            <!-- 推荐产品区域 -->
+            <div v-if="selectedProduct" class="recommendations-section">
+                <h3>为您推荐</h3>
+                <div class="recommendations-grid">
+                    <div v-for="item in recommendedProducts" :key="item.id" class="recommendation-item">
+                        <el-card class="recommendation-card">
+                            <template #header>
+                                <div class="card-header">
+                                    <h4>{{ item.title }}</h4>
+                                </div>
+                            </template>
+                            <div class="recommendation-content">
+                                <div class="recommendation-intro">{{ item.introduction }}</div>
+                                <div class="recommendation-likes">
+                                    <i class="el-icon-like"></i>
+                                    <span>{{ item.likes }}</span>
+                                </div>
+                            </div>
+                        </el-card>
+                    </div>
+                </div>
             </div>
         </div>
         <Footer />
@@ -52,13 +74,33 @@ import API from '@/api'
 import Footer from '@/components/Footer.vue'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
+import { Recommender } from '@/utils/recommender'
+import Papa from 'papaparse'
 
 const looplist: any = ref([])
 const searchQuery = ref('')
 const sortType = ref('publish')
+const recommendedProducts = ref<any[]>([])
+const selectedProduct = ref<any>(null)
 
-// 生成随机点赞数
-const generateRandomLikes = () => Math.floor(Math.random() * 1000)
+// 加载CSV数据
+const loadCSVData = async () => {
+    try {
+        const response = await fetch('/src/data/products.csv')
+        const csvText = await response.text()
+        const { data } = Papa.parse(csvText, { header: true })
+        looplist.value = data.map((item: any) => ({
+            ...item,
+            id: parseInt(item.id),
+            likes: parseInt(item.likes),
+            isLiked: false,
+            likeLoading: false,
+        }))
+    } catch (error) {
+        console.error('Error loading CSV data:', error)
+        ElMessage.error('加载数据失败')
+    }
+}
 
 // 处理点赞
 const handleLike = async (item: any) => {
@@ -66,16 +108,33 @@ const handleLike = async (item: any) => {
 
     item.likeLoading = true
     try {
-        // 模拟点赞请求
         await new Promise((resolve) => setTimeout(resolve, 500))
         item.isLiked = !item.isLiked
         item.likes = item.isLiked ? item.likes + 1 : item.likes - 1
+
+        // 更新推荐
+        if (selectedProduct.value) {
+            updateRecommendations(selectedProduct.value)
+        }
+
         ElMessage.success(item.isLiked ? '点赞成功' : '取消点赞')
     } catch (error) {
         ElMessage.error('操作失败，请稍后重试')
     } finally {
         item.likeLoading = false
     }
+}
+
+// 更新推荐
+const updateRecommendations = (product: any) => {
+    const recommender = new Recommender(looplist.value)
+    recommendedProducts.value = recommender.getRecommendations(product.id)
+}
+
+// 选择产品
+const selectProduct = (product: any) => {
+    selectedProduct.value = product
+    updateRecommendations(product)
 }
 
 // 处理排序变化
@@ -113,16 +172,7 @@ const filteredProducts = computed(() => {
 })
 
 onMounted(async () => {
-    const res = await API.product.list({})
-    if (res.code === 0) {
-        looplist.value = res.data.map((item: any) => ({
-            ...item,
-            isLiked: false,
-            likeLoading: false,
-            likes: generateRandomLikes(),
-            publishTime: item.publishTime || new Date().toISOString(), // 确保有发布时间
-        }))
-    }
+    await loadCSVData()
 })
 </script>
 
@@ -187,25 +237,19 @@ onMounted(async () => {
     margin: 20px 0;
 }
 
-.item {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 1s ease-out;
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
+.product-item {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
     }
 }
 
@@ -410,5 +454,52 @@ onMounted(async () => {
     100% {
         transform: scale(1);
     }
+}
+
+.recommendations-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+
+    h3 {
+        margin-bottom: 20px;
+        color: #2c3e50;
+        font-size: 24px;
+    }
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.recommendation-card {
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.recommendation-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.recommendation-intro {
+    font-size: 14px;
+    color: #666;
+}
+
+.recommendation-likes {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #f56c6c;
+    font-size: 14px;
 }
 </style>

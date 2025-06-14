@@ -9,11 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/papaparse": "^5.3.16",
     "axios": "^1.7.2",
     "element-plus": "^2.7.5",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "normalize.css": "^8.0.1",
+    "papaparse": "^5.5.3",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.21",
