@@ -46,6 +46,18 @@
                 </el-card>
             </el-col>
         </el-row>
+        <el-row :gutter="20">
+            <el-col :span="24">
+                <el-card class="chart-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>天气与农产品点赞关联分析</span>
+                        </div>
+                    </template>
+                    <div ref="weatherSalesChartRef" class="chart"></div>
+                </el-card>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -60,10 +72,12 @@ const viewChartRef = ref()
 const hourlyChartRef = ref()
 const wordCloudChartRef = ref()
 const likeLineChartRef = ref()
+const weatherSalesChartRef = ref()
 let viewChart: echarts.ECharts | null = null
 let hourlyChart: echarts.ECharts | null = null
 let wordCloudChart: echarts.ECharts | null = null
 let likeLineChart: echarts.ECharts | null = null
+let weatherSalesChart: echarts.ECharts | null = null
 
 // 注册词云图组件
 echarts.registerTheme('wordcloud', {
@@ -132,6 +146,13 @@ const initWordCloudChart = () => {
 const initLikeLineChart = () => {
     if (likeLineChartRef.value) {
         likeLineChart = echarts.init(likeLineChartRef.value)
+    }
+}
+
+// 初始化天气与农产品销量/点赞关联分析图表
+const initWeatherSalesChart = () => {
+    if (weatherSalesChartRef.value) {
+        weatherSalesChart = echarts.init(weatherSalesChartRef.value)
     }
 }
 
@@ -343,6 +364,60 @@ const updateLikeLineChart = async () => {
     }
 }
 
+// 更新天气与农产品销量/点赞关联分析图表数据
+const updateWeatherSalesChart = async () => {
+    if (!weatherSalesChart && weatherSalesChartRef.value) {
+        weatherSalesChart = echarts.init(weatherSalesChartRef.value)
+    }
+    const response = await fetch('/data/products_weather.csv')
+    const csvText = await response.text()
+    const { data } = Papa.parse(csvText, { header: true })
+
+    // 获取所有日期、产品
+    const dates = [...new Set(data.map((item: any) => item.date))]
+    const products = [...new Set(data.map((item: any) => item.product))]
+
+    // 构造每个产品的销量序列（如需点赞量，把 sales 换成 likes）
+    const series = products.map((product) => ({
+        name: product,
+        type: 'line',
+        yAxisIndex: 0,
+        data: dates.map((date) => {
+            const found = data.find((item: any) => item.date === date && item.product === product)
+            return found ? Number(found.sales) : 0
+        }),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 8,
+    }))
+
+    // 温度序列
+    const tempSeries = {
+        name: '最高温度',
+        type: 'bar',
+        yAxisIndex: 1,
+        data: dates.map((date) => {
+            // 取当天第一个产品的温度即可
+            const found = data.find((item: any) => item.date === date)
+            return found ? Number(found.temp) : 0
+        }),
+        barWidth: 20,
+        itemStyle: { color: '#F56C6C' },
+    }
+
+    const option = {
+        tooltip: { trigger: 'axis' },
+        legend: { data: [...products, '最高温度'] },
+        xAxis: { type: 'category', data: dates },
+        yAxis: [
+            { type: 'value', name: '销量', minInterval: 1 },
+            { type: 'value', name: '温度(℃)', position: 'right' },
+        ],
+        series: [...series, tempSeries],
+    }
+    weatherSalesChart.setOption(option)
+}
+
 // 自动刷新数据
 let refreshTimer: number
 const startAutoRefresh = () => {
@@ -351,6 +426,7 @@ const startAutoRefresh = () => {
         updateHourlyChart()
         updateWordCloudChart()
         updateLikeLineChart()
+        updateWeatherSalesChart()
     }, 5 * 60 * 1000) // 每5分钟刷新一次
 }
 
@@ -359,10 +435,12 @@ onMounted(() => {
     initHourlyChart()
     initWordCloudChart()
     initLikeLineChart()
+    initWeatherSalesChart()
     updateViewChart()
     updateHourlyChart()
     updateWordCloudChart()
     updateLikeLineChart()
+    updateWeatherSalesChart()
     startAutoRefresh()
 
     window.addEventListener('resize', () => {
@@ -370,6 +448,7 @@ onMounted(() => {
         hourlyChart?.resize()
         wordCloudChart?.resize()
         likeLineChart?.resize()
+        weatherSalesChart?.resize()
     })
 })
 
@@ -381,6 +460,7 @@ onUnmounted(() => {
     hourlyChart?.dispose()
     wordCloudChart?.dispose()
     likeLineChart?.dispose()
+    weatherSalesChart?.dispose()
 })
 </script>
 
