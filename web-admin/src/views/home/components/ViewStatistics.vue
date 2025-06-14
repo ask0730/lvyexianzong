@@ -34,6 +34,18 @@
                 </el-card>
             </el-col>
         </el-row>
+        <el-row :gutter="20">
+            <el-col :span="24">
+                <el-card class="chart-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span>用户农产品点赞折线图</span>
+                        </div>
+                    </template>
+                    <div ref="likeLineChartRef" class="chart"></div>
+                </el-card>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -47,9 +59,11 @@ import Papa from 'papaparse'
 const viewChartRef = ref()
 const hourlyChartRef = ref()
 const wordCloudChartRef = ref()
+const likeLineChartRef = ref()
 let viewChart: echarts.ECharts | null = null
 let hourlyChart: echarts.ECharts | null = null
 let wordCloudChart: echarts.ECharts | null = null
+let likeLineChart: echarts.ECharts | null = null
 
 // 注册词云图组件
 echarts.registerTheme('wordcloud', {
@@ -111,6 +125,13 @@ const initHourlyChart = () => {
 const initWordCloudChart = () => {
     if (wordCloudChartRef.value) {
         wordCloudChart = echarts.init(wordCloudChartRef.value)
+    }
+}
+
+// 初始化点赞折线图
+const initLikeLineChart = () => {
+    if (likeLineChartRef.value) {
+        likeLineChart = echarts.init(likeLineChartRef.value)
     }
 }
 
@@ -268,6 +289,60 @@ const updateWordCloudChart = async () => {
     }
 }
 
+// 更新点赞折线图数据
+const updateLikeLineChart = async () => {
+    if (likeLineChart) {
+        try {
+            const response = await fetch('/data/products.csv')
+            const csvText = await response.text()
+            const { data } = Papa.parse(csvText, { header: true })
+            const titles = data.filter((item: any) => item.title && item.likes).map((item: any) => item.title)
+            const likes = data.filter((item: any) => item.title && item.likes).map((item: any) => parseInt(item.likes))
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                },
+                xAxis: {
+                    type: 'category',
+                    data: titles,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 30,
+                        formatter: (value: string) => (value.length > 8 ? value.substring(0, 8) + '...' : value),
+                    },
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '点赞量',
+                },
+                series: [
+                    {
+                        name: '点赞量',
+                        type: 'line',
+                        data: likes,
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 8,
+                        lineStyle: {
+                            width: 3,
+                            color: '#409EFF',
+                        },
+                        itemStyle: {
+                            color: '#409EFF',
+                        },
+                        areaStyle: {
+                            color: 'rgba(64,158,255,0.15)',
+                        },
+                    },
+                ],
+            }
+            likeLineChart.setOption(option)
+        } catch (e) {
+            console.error('点赞折线图CSV加载失败', e)
+        }
+    }
+}
+
 // 自动刷新数据
 let refreshTimer: number
 const startAutoRefresh = () => {
@@ -275,6 +350,7 @@ const startAutoRefresh = () => {
         updateViewChart()
         updateHourlyChart()
         updateWordCloudChart()
+        updateLikeLineChart()
     }, 5 * 60 * 1000) // 每5分钟刷新一次
 }
 
@@ -282,15 +358,18 @@ onMounted(() => {
     initViewChart()
     initHourlyChart()
     initWordCloudChart()
+    initLikeLineChart()
     updateViewChart()
     updateHourlyChart()
     updateWordCloudChart()
+    updateLikeLineChart()
     startAutoRefresh()
 
     window.addEventListener('resize', () => {
         viewChart?.resize()
         hourlyChart?.resize()
         wordCloudChart?.resize()
+        likeLineChart?.resize()
     })
 })
 
@@ -301,6 +380,7 @@ onUnmounted(() => {
     viewChart?.dispose()
     hourlyChart?.dispose()
     wordCloudChart?.dispose()
+    likeLineChart?.dispose()
 })
 </script>
 
