@@ -21,7 +21,7 @@
                 <div v-if="filteredProducts.length" class="products-grid">
                     <div v-for="item in filteredProducts" :key="item.id" class="product-item" @click="selectProduct(item)">
                         <el-card class="box-card" :class="{ 'selected': selectedProduct?.id === item.id }" shadow="hover">
-                            <div class="product-img" :style="{ backgroundImage: `url(http://localhost:3000/${item.cover})` }"></div>
+                            <div class="product-img" :style="{ backgroundImage: `url(/images/${item.cover})` }"></div>
                             <div class="product-info">
                                 <h2 class="product-title">{{ item.title }}</h2>
                                 <div class="product-intro">{{ item.introduction }}</div>
@@ -40,12 +40,12 @@
             </div>
 
             <!-- 推荐产品区域 -->
-            <div v-if="selectedProduct" class="recommendations-section">
+            <div class="recommendations-section">
                 <h3>为您推荐</h3>
-                <div class="recommendations-grid">
+                <div v-if="recommendedProducts.length > 0" class="recommendations-grid">
                     <div v-for="item in recommendedProducts" :key="item.id" class="recommendation-item">
                         <el-card class="recommendation-card" shadow="hover">
-                            <div class="recommendation-img" :style="{ backgroundImage: `url(http://localhost:3000/${item.cover})` }"></div>
+                            <div class="recommendation-img" :style="{ backgroundImage: `url(/images/${item.cover})` }"></div>
                             <div class="recommendation-info">
                                 <h4 class="recommendation-title">{{ item.title }}</h4>
                                 <div class="recommendation-intro">{{ item.introduction }}</div>
@@ -57,6 +57,7 @@
                         </el-card>
                     </div>
                 </div>
+                <el-empty v-else description="暂无推荐" />
             </div>
         </div>
         <Footer />
