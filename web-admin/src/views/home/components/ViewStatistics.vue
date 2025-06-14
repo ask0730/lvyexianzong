@@ -42,6 +42,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import 'echarts-wordcloud'
 import { getViewStatistics, getHourlyViewDistribution } from '@/api/viewRecord'
+import Papa from 'papaparse'
 
 const viewChartRef = ref()
 const hourlyChartRef = ref()
@@ -204,76 +205,66 @@ const updateHourlyChart = async () => {
 }
 
 // 更新词云图数据
-const updateWordCloudChart = () => {
+const updateWordCloudChart = async () => {
     if (wordCloudChart) {
-        // 模拟数据
-        const wordCloudData = [
-            { name: '有机蔬菜', value: 1000 },
-            { name: '生态大米', value: 800 },
-            { name: '绿色水果', value: 900 },
-            { name: '无公害蔬菜', value: 700 },
-            { name: '有机茶叶', value: 600 },
-            { name: '生态养殖', value: 500 },
-            { name: '绿色食品', value: 400 },
-            { name: '有机农产品', value: 300 },
-            { name: '生态农业', value: 200 },
-            { name: '绿色种植', value: 100 },
-        ]
+        // 动态读取 CSV 数据
+        try {
+            const response = await fetch('/data/products.csv')
+            const csvText = await response.text()
+            const { data } = Papa.parse(csvText, { header: true })
+            // 过滤有效数据
+            const wordCloudData = data
+                .filter((item) => item.title && item.likes)
+                .map((item) => ({
+                    name: item.title,
+                    value: parseInt(item.likes),
+                }))
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 30) // 只取前30个，防止词云过多
 
-        const option = {
-            tooltip: {
-                show: true,
-                formatter: function (params: any) {
-                    return `${params.name}: ${params.value} 点赞`
-                },
-            },
-            series: [
-                {
-                    type: 'scatter',
-                    coordinateSystem: 'cartesian2d',
-                    symbolSize: function (data: any) {
-                        return Math.sqrt(data[2]) * 5
+            const option = {
+                tooltip: {
+                    show: true,
+                    formatter: function (params) {
+                        return `${params.name}: ${params.value} 点赞`
                     },
-                    data: wordCloudData.map((item) => ({
-                        name: item.name,
-                        value: [Math.random() * 100, Math.random() * 100, item.value],
-                        itemStyle: {
-                            color: (function () {
-                                const colors = [
-                                    '#409EFF', // Element Plus 主题蓝
-                                    '#67C23A', // Element Plus 成功绿
-                                    '#E6A23C', // Element Plus 警告黄
-                                    '#F56C6C', // Element Plus 危险红
-                                    '#909399', // Element Plus 信息灰
-                                ]
-                                return colors[Math.floor(Math.random() * colors.length)]
-                            })(),
-                        },
-                        label: {
-                            show: true,
-                            formatter: '{b}',
-                            position: 'top',
-                            fontSize: 12,
-                            fontWeight: 'bold',
-                        },
-                    })),
                 },
-            ],
-            xAxis: {
-                show: false,
-                type: 'value',
-                min: 0,
-                max: 100,
-            },
-            yAxis: {
-                show: false,
-                type: 'value',
-                min: 0,
-                max: 100,
-            },
+                series: [
+                    {
+                        type: 'wordCloud',
+                        shape: 'circle',
+                        left: 'center',
+                        top: 'center',
+                        width: '90%',
+                        height: '90%',
+                        sizeRange: [18, 60],
+                        rotationRange: [-45, 45],
+                        rotationStep: 45,
+                        gridSize: 8,
+                        drawOutOfBound: false,
+                        textStyle: {
+                            fontFamily: 'sans-serif',
+                            fontWeight: 'bold',
+                            color: function () {
+                                const colors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399']
+                                return colors[Math.floor(Math.random() * colors.length)]
+                            },
+                        },
+                        emphasis: {
+                            focus: 'self',
+                            textStyle: {
+                                shadowBlur: 10,
+                                shadowColor: '#333',
+                            },
+                        },
+                        data: wordCloudData,
+                    },
+                ],
+            }
+            wordCloudChart.setOption(option)
+        } catch (e) {
+            console.error('词云CSV加载失败', e)
         }
-
-        wordCloudChart.setOption(option)
     }
 }
 
