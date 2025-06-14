@@ -21,7 +21,9 @@
                 <div v-if="filteredProducts.length" class="products-grid">
                     <div v-for="item in filteredProducts" :key="item.id" class="product-item" @click="selectProduct(item)">
                         <el-card class="box-card" :class="{ 'selected': selectedProduct?.id === item.id }" shadow="hover">
-                            <div class="product-img" :style="{ backgroundImage: `url(/images/${item.cover})` }"></div>
+                            <div class="product-img">
+                                <img :src="`/images/${item.cover}`" alt="产品图片" />
+                            </div>
                             <div class="product-info">
                                 <h2 class="product-title">{{ item.title }}</h2>
                                 <div class="product-intro">{{ item.introduction }}</div>
@@ -49,7 +51,9 @@
                 <div v-if="recommendedProducts.length > 0" class="recommendations-grid">
                     <div v-for="item in recommendedProducts" :key="item.id" class="recommendation-item">
                         <el-card class="recommendation-card" shadow="hover">
-                            <div class="recommendation-img" :style="{ backgroundImage: `url(/images/${item.cover})` }"></div>
+                            <div class="recommendation-img">
+                                <img :src="`/images/${item.cover}`" alt="产品图片" />
+                            </div>
                             <div class="recommendation-info">
                                 <h4 class="recommendation-title">{{ item.title }}</h4>
                                 <div class="recommendation-intro">{{ item.introduction }}</div>
@@ -288,11 +292,19 @@ onMounted(async () => {
 .product-img {
     width: 100%;
     height: 180px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
+    overflow: hidden;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
 }
 
 .product-info {
@@ -431,11 +443,19 @@ onMounted(async () => {
 .recommendation-img {
     width: 100%;
     height: 120px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
+    overflow: hidden;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
 }
 
 .recommendation-info {
