@@ -26,6 +26,10 @@
                                 <h2 class="product-title">{{ item.title }}</h2>
                                 <div class="product-intro">{{ item.introduction }}</div>
                                 <div class="product-detail">{{ item.detail }}</div>
+                                <div class="product-meta">
+                                    <span>产地：{{ item.origin }}</span>
+                                    <span>价格：{{ item.price }}元</span>
+                                </div>
                                 <div class="like-section">
                                     <el-button :class="['like-button', { 'is-liked': item.isLiked }]" @click.stop="handleLike(item)" :loading="item.likeLoading">
                                         <i class="el-icon-like" :class="{ 'is-liked': item.isLiked }"></i>
@@ -49,6 +53,10 @@
                             <div class="recommendation-info">
                                 <h4 class="recommendation-title">{{ item.title }}</h4>
                                 <div class="recommendation-intro">{{ item.introduction }}</div>
+                                <div class="recommendation-meta">
+                                    <span>产地：{{ item.origin }}</span>
+                                    <span>价格：{{ item.price }}元</span>
+                                </div>
                                 <div class="recommendation-likes">
                                     <i class="el-icon-like"></i>
                                     <span>{{ item.likes }}</span>
@@ -325,6 +333,14 @@ onMounted(async () => {
     -webkit-box-orient: vertical;
 }
 
+.product-meta {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
 .like-section {
     display: flex;
     justify-content: flex-end;
@@ -446,6 +462,14 @@ onMounted(async () => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.recommendation-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 6px;
 }
 
 .recommendation-likes {
