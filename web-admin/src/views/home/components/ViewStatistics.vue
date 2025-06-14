@@ -58,6 +58,27 @@
                 </el-card>
             </el-col>
         </el-row>
+        <!-- 个性化推荐 -->
+        <div class="recommendations-section">
+            <h3>为您推荐</h3>
+            <div v-if="recommendedProducts.length > 0" class="recommendations-grid">
+                <div v-for="item in recommendedProducts" :key="item.id" class="recommendation-item">
+                    <!-- ... -->
+                </div>
+            </div>
+            <el-empty v-else description="暂无推荐" />
+        </div>
+
+        <!-- 热门推荐 -->
+        <div class="recommendations-section">
+            <h3>热门推荐</h3>
+            <div v-if="hotProducts.length > 0" class="recommendations-grid">
+                <div v-for="item in hotProducts" :key="item.id" class="recommendation-item">
+                    <!-- ... -->
+                </div>
+            </div>
+            <el-empty v-else description="暂无热门" />
+        </div>
     </div>
 </template>
 
@@ -78,6 +99,8 @@ let hourlyChart: echarts.ECharts | null = null
 let wordCloudChart: echarts.ECharts | null = null
 let likeLineChart: echarts.ECharts | null = null
 let weatherSalesChart: echarts.ECharts | null = null
+
+const hotProducts = ref<any[]>([])
 
 // 注册词云图组件
 echarts.registerTheme('wordcloud', {
@@ -430,6 +453,30 @@ const startAutoRefresh = () => {
     }, 5 * 60 * 1000) // 每5分钟刷新一次
 }
 
+// 获取热门产品（按点赞量排序，取前3个）
+const getHotProducts = (count = 3) => {
+    return [...looplist.value].sort((a, b) => b.likes - a.likes).slice(0, count)
+}
+
+// 融合协同过滤和热门推荐，去重
+const getHybridRecommendations = (productId: number, num = 3) => {
+    const recommender = new Recommender(looplist.value)
+    const cfRecs = recommender.getRecommendations(productId, num)
+    const hotRecs = getHotProducts(num)
+    // 融合去重（优先协同过滤）
+    const all = [...cfRecs, ...hotRecs]
+    const unique = []
+    const ids = new Set()
+    for (const item of all) {
+        if (!ids.has(item.id) && item.id !== productId) {
+            unique.push(item)
+            ids.add(item.id)
+        }
+        if (unique.length >= num * 2) break
+    }
+    return unique
+}
+
 onMounted(() => {
     initViewChart()
     initHourlyChart()
@@ -450,6 +497,8 @@ onMounted(() => {
         likeLineChart?.resize()
         weatherSalesChart?.resize()
     })
+
+    hotProducts.value = getHotProducts(3)
 })
 
 onUnmounted(() => {
@@ -462,6 +511,11 @@ onUnmounted(() => {
     likeLineChart?.dispose()
     weatherSalesChart?.dispose()
 })
+
+// 推荐更新时也可融合
+const updateRecommendations = (product: any) => {
+    recommendedProducts.value = getHybridRecommendations(product.id, 3)
+}
 </script>
 
 <style scoped>
@@ -482,5 +536,19 @@ onUnmounted(() => {
 .chart {
     height: 400px;
     width: 100%;
+}
+
+.recommendations-section {
+    margin-top: 20px;
+}
+
+.recommendations-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.recommendation-item {
+    width: calc(33.33% - 20px);
+    margin: 10px;
 }
 </style>
