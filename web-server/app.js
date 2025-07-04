@@ -13,7 +13,6 @@ const ProductRouter = require('./routes/admin/ProductRouter');
 const webNewsRouter = require('./routes/web/NewsRouter');
 const webProductRouter = require('./routes/web/ProductRouter');
 const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
-const webLikeRouter = require('./routes/web/likeRoutes');
 const webCommentRouter = require('./routes/web/commentRouter');
 const webChatRouter = require('./routes/web/index');
 const crawlerRouter = require('./routes/crawler/index');
@@ -69,7 +68,6 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/webapi/users', usersRouter);
 
-app.use('/webapi/like', webLikeRouter);
 app.use('/webapi/comment', webCommentRouter);
 app.use(webNewsRouter);
 app.use(webProductRouter);

@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('web-server:server');
 var http = require('http');
+var fs = require('fs');
+var https = require('https');
 
 require("../config/db.config")
 
@@ -14,22 +16,34 @@ require("../config/db.config")
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+var httpsPort = 443;
+var httpPort = normalizePort(process.env.PORT || '3000');
+
+// 读取SSL证书
+var privateKey = fs.readFileSync(__dirname + '/../cert/server.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/../cert/server.crt', 'utf8');
+var credentials = { key: privateKey, cert: certificate };
+
+/**
+ * Create HTTPS server.
+ */
+
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(httpsPort, () => {
+  console.log('HTTPS Server running on port ' + httpsPort);
+});
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+var httpServer = http.createServer(function (req, res) {
+  res.writeHead(301, { "Location": 'https://' + req.headers['host'] + req.url });
+  res.end();
+});
+httpServer.listen(httpPort, () => {
+  console.log('HTTP Server running on port ' + httpPort + ' and redirecting to HTTPS');
+});
 
 /**
  * Normalize a port into a number, string, or false.
@@ -60,9 +74,9 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof httpPort === 'string'
+    ? 'Pipe ' + httpPort
+    : 'Port ' + httpPort;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -84,7 +98,7 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
+  var addr = httpServer.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
