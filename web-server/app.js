@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,6 +29,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  secret: 'lvyexianzong-secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, maxAge: 10 * 60 * 1000 } // 10分钟
+}));
 
 // 白名单路由，不需要 JWT 验证
 const publicRoutes = [

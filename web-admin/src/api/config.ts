@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const instance = axios.create();
@@ -23,10 +22,15 @@ instance.interceptors.response.use(
     return response.data;
   },
   reason => {
-    const { status } = reason.response;
-    if (status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '#/login';
+    if (reason.response) {
+      const { status } = reason.response;
+      if (status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '#/login';
+      }
+    } else {
+      // 网络或SSL错误
+      alert('网络连接失败或SSL错误');
     }
     return Promise.reject(reason);
   }

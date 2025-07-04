@@ -23,12 +23,16 @@ export default defineConfig(() => {
       port: 5173,
       force: true,
       proxy: {
-        // 选项写法
         '/adminapi': {
-          target: 'http://localhost:3000',
+          target: 'https://localhost',
           changeOrigin: true,
-          rewrite: path => path.replace(/^\//, ''),
+          secure: false,
         },
+        '/api': {
+          target: 'https://localhost',
+          changeOrigin: true,
+          secure: false,
+        }
       },
     },
   };

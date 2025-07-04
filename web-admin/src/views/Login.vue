@@ -10,10 +10,12 @@
                 <el-form-item label="密码" prop="password" class="animate__animated animate__fadeInLeft animate__delay-1s">
                     <el-input v-model="loginForm.password" type="password" autocomplete="off" />
                 </el-form-item>
+                <el-form-item v-if="showCaptcha" label="验证码" prop="captcha">
+                    <el-input v-model="loginForm.captcha" autocomplete="off" maxlength="4" />
+                    <img :src="captchaUrl" @click="refreshCaptcha" style="cursor:pointer;margin-left:10px;height:32px;vertical-align:middle;" title="点击刷新验证码" />
+                </el-form-item>
                 <el-form-item class="animate__animated animate__fadeInUp animate__delay-2s">
-                    <el-button type="primary" @click="submitForm()" class="login-btn" :loading="loading">
-                        {{ loading ? '登录中...' : '登录' }}
-                    </el-button>
+                    <el-button type="primary" @click="submitForm()" class="login-btn" :loading="loading">{{ loading ? '登录中...' : '登录' }}</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -21,7 +23,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import API from '@/api'
 import { ElMessage } from 'element-plus'
@@ -102,15 +104,34 @@ const options = {
 const loginForm = reactive({
     username: 'admin',
     password: '123456',
+    captcha: '',
 })
 const loginFormRef = ref()
 const loginRules = reactive({
     username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    captcha: [
+        {
+            required: () => showCaptcha.value,
+            message: '请输入验证码',
+            trigger: 'blur',
+        },
+        {
+            pattern: /^[a-zA-Z0-9]{4}$/,
+            message: '验证码格式错误',
+            trigger: 'blur',
+        },
+    ],
 })
 const router = useRouter()
 
 const loading = ref(false)
+const showCaptcha = ref(false)
+const errorCount = ref(0)
+const captchaUrl = ref('/api/captcha?' + Date.now())
+const refreshCaptcha = () => {
+    captchaUrl.value = '/api/captcha?' + Date.now()
+}
 
 const submitForm = () => {
     loginFormRef.value.validate(async (valid) => {
@@ -121,7 +142,14 @@ const submitForm = () => {
                 if (res.code === 0) {
                     useTool.changeUserInfo(res.data)
                     router.push('/index')
+                    errorCount.value = 0
+                    showCaptcha.value = false
                 } else {
+                    errorCount.value++
+                    if (errorCount.value >= 5) {
+                        showCaptcha.value = true
+                        refreshCaptcha()
+                    }
                     ElMessage.error(`${res.msg}`)
                 }
             } finally {
@@ -130,6 +158,10 @@ const submitForm = () => {
         }
     })
 }
+
+watch(showCaptcha, (val) => {
+    if (val) loginForm.captcha = ''
+})
 </script>
 
 <style lang="scss" scoped>
@@ -146,13 +178,13 @@ const submitForm = () => {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    
+
     &::before {
         content: '';
         position: absolute;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
         animation: rotate 20s linear infinite;
     }
 }
@@ -178,10 +210,10 @@ const submitForm = () => {
     border-radius: 5px;
     box-sizing: border-box;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    
+
     &:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     }
 
     h3 {
@@ -195,7 +227,7 @@ const submitForm = () => {
 
     .loginform {
         margin-top: 20px;
-        
+
         :deep(.el-form-item) {
             margin-bottom: 25px;
         }
@@ -209,12 +241,12 @@ const submitForm = () => {
             height: 40px;
             font-size: 16px;
             transition: all 0.3s ease;
-            
+
             &:hover {
                 transform: scale(1.05);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             }
-            
+
             &:active {
                 transform: scale(0.95);
             }
@@ -224,10 +256,10 @@ const submitForm = () => {
 
 @keyframes titleGlow {
     from {
-        text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
     to {
-        text-shadow: 0 0 15px rgba(255,255,255,0.8);
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
     }
 }
 
@@ -239,7 +271,7 @@ const submitForm = () => {
 @media screen and (max-width: 768px) {
     .formContainer {
         padding: 15px;
-        
+
         .loginform {
             :deep(.el-form-item__label) {
                 float: none;
@@ -248,7 +280,7 @@ const submitForm = () => {
                 padding: 0 0 10px;
                 line-height: 1;
             }
-            
+
             :deep(.el-form-item__content) {
                 margin-left: 0 !important;
             }
@@ -260,11 +292,11 @@ const submitForm = () => {
 @media screen and (max-width: 320px) {
     .formContainer {
         padding: 10px;
-        
+
         h3 {
             margin-bottom: 15px;
         }
-        
+
         .loginform {
             margin-top: 15px;
         }
@@ -274,10 +306,10 @@ const submitForm = () => {
 // 添加输入框动画
 :deep(.el-input__inner) {
     transition: all 0.3s ease;
-    
+
     &:focus {
         transform: translateX(5px);
-        box-shadow: -5px 0 10px rgba(0,0,0,0.1);
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1);
     }
 }
 </style>
