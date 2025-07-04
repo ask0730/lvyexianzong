@@ -20,7 +20,7 @@ export default defineConfig(() => {
         key: fs.readFileSync('../web-server/cert/server.key'),
         cert: fs.readFileSync('../web-server/cert/server.crt'),
       },
-      port: 5173,
+      port: 8080,
       force: true,
       proxy: {
         '/adminapi': {

@@ -20,7 +20,7 @@ export default defineConfig(() => {
         key: fs.readFileSync('../web-server/cert/server.key'),
         cert: fs.readFileSync('../web-server/cert/server.crt'),
       },
-      port: 5174,
+      port: 8081,
       force: true,
       proxy: {
         // 选项写法
