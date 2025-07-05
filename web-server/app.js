@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,7 +14,6 @@ const ProductRouter = require('./routes/admin/ProductRouter');
 const webNewsRouter = require('./routes/web/NewsRouter');
 const webProductRouter = require('./routes/web/ProductRouter');
 const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
-const webLikeRouter = require('./routes/web/likeRoutes');
 const webCommentRouter = require('./routes/web/commentRouter');
 const webChatRouter = require('./routes/web/index');
 const crawlerRouter = require('./routes/crawler/index');
@@ -29,6 +29,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  secret: 'lvyexianzong-secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false, maxAge: 10 * 60 * 1000 } // 10分钟
+}));
 
 // 白名单路由，不需要 JWT 验证
 const publicRoutes = [
@@ -69,7 +76,6 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/webapi/users', usersRouter);
 
-app.use('/webapi/like', webLikeRouter);
 app.use('/webapi/comment', webCommentRouter);
 app.use(webNewsRouter);
 app.use(webProductRouter);

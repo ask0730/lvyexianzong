@@ -21,6 +21,15 @@ const UserController = {
     }
   },
   login: async (req, res) => {
+    // 验证码校验
+    if (req.session && req.session.captcha) {
+      const { captcha } = req.body;
+      if (!captcha || captcha.toLowerCase() !== req.session.captcha.toLowerCase()) {
+        return res.send({ code: 1, msg: '验证码错误' });
+      }
+    }
+    // 清除验证码，防止复用
+    if (req.session) req.session.captcha = null;
     const result = await UserService.login(req.body);
     if (result.length === 0) {
       res.send({
