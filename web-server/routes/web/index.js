@@ -3,6 +3,9 @@ const router = express.Router();
 const AuthMiddleware = require('../../middleware/AuthMiddleware');
 const axios = require('axios');
 
+// 引入验证码路由
+const captchaRouter = require('./captcha');
+
 // 聊天相关路由
 router.post('/chat/send', AuthMiddleware.requireAuth, async (req, res) => {
     try {
@@ -40,5 +43,8 @@ router.post('/chat/send', AuthMiddleware.requireAuth, async (req, res) => {
         });
     }
 });
+
+// 注册验证码路由
+router.use('/captcha', captchaRouter);
 
 module.exports = router;

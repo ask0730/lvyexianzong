@@ -97,7 +97,7 @@ router.post('/register', async (req, res) => {
 // 用户登录路由
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, captchaVerified, captchaSessionId } = req.body;
 
     // 检查必填字段
     if (!username || !password) {
@@ -105,6 +105,20 @@ router.post('/login', async (req, res) => {
         code: 1,
         message: '用户名和密码不能为空' 
       });
+    }
+
+    // 验证滑动验证码
+    if (!captchaVerified) {
+      return res.status(400).json({ 
+        code: 1,
+        message: '请先完成滑动验证' 
+      });
+    }
+
+    // 如果有验证码会话ID，进行额外验证
+    if (captchaSessionId) {
+      // 这里可以添加额外的验证码会话验证逻辑
+      // 实际项目中应该检查验证码会话的有效性
     }
 
     // 查找用户
