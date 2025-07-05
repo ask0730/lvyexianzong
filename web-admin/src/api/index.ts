@@ -27,5 +27,16 @@ export default {
     list: post('/adminapi/product/list'), // 产品列表
     delete: post('/adminapi/product/delete'), // 删除产品
     update: post('/adminapi/product/update'), // 修改产品
+  },
+  loginAttempts: {
+    stats: () => fetch('/adminapi/login-attempts/stats').then(res => res.json()), // 获取统计
+    recent: post('/adminapi/login-attempts/recent'), // 获取最近记录
+    userAttempts: post('/adminapi/login-attempts/user'), // 获取用户尝试
+    ipAttempts: post('/adminapi/login-attempts/ip'), // 获取IP尝试
+    lockedUsers: () => fetch('/adminapi/login-attempts/locked-users').then(res => res.json()), // 获取锁定用户
+    lockedIPs: () => fetch('/adminapi/login-attempts/locked-ips').then(res => res.json()), // 获取锁定IP
+    unlockUser: post('/adminapi/login-attempts/unlock-user'), // 解锁用户
+    unlockIP: post('/adminapi/login-attempts/unlock-ip'), // 解锁IP
+    cleanup: post('/adminapi/login-attempts/cleanup') // 清理记录
   }
 };

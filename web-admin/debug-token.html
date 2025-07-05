@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Token调试页面</h1>
+    
+    <div class="section">
+        <h2>1. 检查LocalStorage</h2>
+        <button class="button" onclick="checkLocalStorage()">检查LocalStorage</button>
+        <button class="button" onclick="clearLocalStorage()">清除LocalStorage</button>
+        <div id="localStorageResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. 测试登录</h2>
+        <input type="text" id="username" placeholder="用户名" value="admin" style="padding: 5px; margin-right: 10px;">
+        <input type="password" id="password" placeholder="密码" value="123456" style="padding: 5px; margin-right: 10px;">
+        <button class="button" onclick="testLogin()">测试登录</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. 测试API接口</h2>
+        <button class="button" onclick="testStats()">测试统计接口</button>
+        <button class="button" onclick="testLockedUsers()">测试锁定用户接口</button>
+        <button class="button" onclick="testLockedIPs()">测试锁定IP接口</button>
+        <div id="apiResult" class="result"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3000';
+
+        function checkLocalStorage() {
+            const result = document.getElementById('localStorageResult');
+            const token = localStorage.getItem('token');
+            const tool = localStorage.getItem('tool');
+            
+            result.innerHTML = `Token: ${token || '未找到'}\n\nTool Store: ${tool || '未找到'}`;
+        }
+
+        function clearLocalStorage() {
+            localStorage.clear();
+            document.getElementById('localStorageResult').innerHTML = 'LocalStorage已清除';
+        }
+
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const result = document.getElementById('loginResult');
+            
+            try {
+                result.innerHTML = '正在登录...';
+                
+                const response = await fetch(`${BASE_URL}/adminapi/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                const authHeader = response.headers.get('authorization') || response.headers.get('Authorization');
+                
+                result.innerHTML = `状态码: ${response.status}\n响应头: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\n响应数据: ${JSON.stringify(data, null, 2)}`;
+                
+                if (authHeader) {
+                    localStorage.setItem('token', authHeader);
+                    result.innerHTML += '\n\nToken已保存到localStorage';
+                }
+                
+            } catch (error) {
+                result.innerHTML = `错误: ${error.message}`;
+            }
+        }
+
+        async function testStats() {
+            const result = document.getElementById('apiResult');
+            try {
+                result.innerHTML = '正在测试统计接口...';
+                
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${BASE_URL}/adminapi/login-attempts/stats`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `状态码: ${response.status}\n响应数据: ${JSON.stringify(data, null, 2)}`;
+                
+            } catch (error) {
+                result.innerHTML = `错误: ${error.message}`;
+            }
+        }
+
+        async function testLockedUsers() {
+            const result = document.getElementById('apiResult');
+            try {
+                result.innerHTML = '正在测试锁定用户接口...';
+                
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${BASE_URL}/adminapi/login-attempts/locked-users`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `状态码: ${response.status}\n响应数据: ${JSON.stringify(data, null, 2)}`;
+                
+            } catch (error) {
+                result.innerHTML = `错误: ${error.message}`;
+            }
+        }
+
+        async function testLockedIPs() {
+            const result = document.getElementById('apiResult');
+            try {
+                result.innerHTML = '正在测试锁定IP接口...';
+                
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${BASE_URL}/adminapi/login-attempts/locked-ips`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                result.innerHTML = `状态码: ${response.status}\n响应数据: ${JSON.stringify(data, null, 2)}`;
+                
+            } catch (error) {
+                result.innerHTML = `错误: ${error.message}`;
+            }
+        }
+
+        // 页面加载时检查localStorage
+        window.onload = function() {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html> 

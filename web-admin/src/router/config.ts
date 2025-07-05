@@ -57,6 +57,20 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/product-manage/ProductEdit.vue'),
   },
   {
+    path: '/admin/login-attempts',
+    component: () => import('@/views/admin/LoginAttempts.vue'),
+    meta: {
+      requireAdmin: true,
+    },
+  },
+  {
+    path: '/admin/login-attempts-test',
+    component: () => import('@/views/admin/LoginAttemptsTest.vue'),
+    meta: {
+      requireAdmin: true,
+    },
+  },
+  {
     path: '/',
     redirect: '/index',
   },

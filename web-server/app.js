@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const UserRouter = require('./routes/admin/UserRouter');
+const LoginAttemptRouter = require('./routes/admin/LoginAttemptRouter');
 const JWT = require('./utils/JWT');
 const NewsRouter = require('./routes/admin/NewsRouter');
 const ProductRouter = require('./routes/admin/ProductRouter');
@@ -38,7 +39,9 @@ const publicRoutes = [
   '/webapi/view-record',
   '/webapi/comment/*',
   '/webapi/chat/send',
-  '/api/spider-news'
+  '/api/spider-news',
+  // 开发阶段，登录尝试管理接口暂时不需要认证
+  '/adminapi/login-attempts/*'
 ];
 
 // 全局中间件：处理跨域和公共路由
@@ -83,7 +86,12 @@ app.use('/', crawlerRouter);
  */
 app.use((req, res, next) => {
   // 检查是否为公共路由
-  if (publicRoutes.includes(req.path)) {
+  if (publicRoutes.some(route => {
+    if (route.endsWith('*')) {
+      return req.path.startsWith(route.slice(0, -1));
+    }
+    return route === req.path;
+  })) {
     return next();
   }
 
@@ -135,6 +143,7 @@ app.use((req, res, next) => {
 });
 
 app.use(UserRouter);
+app.use(LoginAttemptRouter);
 app.use(NewsRouter);
 app.use(ProductRouter);
 

@@ -1,5 +1,6 @@
 const UserService = require('../../services/admin/UserService');
 const JWT = require('../../utils/JWT');
+const { recordLoginAttempt } = require('../../middleware/BruteForceProtection');
 
 const UserController = {
   getGenderStats: async (req, res) => {
@@ -21,33 +22,58 @@ const UserController = {
     }
   },
   login: async (req, res) => {
-    const result = await UserService.login(req.body);
-    if (result.length === 0) {
-      res.send({
-        code: 1,
-        msg: '用户名密码不匹配',
-      });
-    } else {
-      //生成token
-      const token = JWT.generate(
-        {
-          _id: result[0]._id,
-          username: result[0].username,
-        },
-        '1d'
-      );
-      res.header('Authorization', token);
+    try {
+      const result = await UserService.login(req.body);
+      
+      if (result.length === 0) {
+        // 登录失败，记录失败尝试
+        if (res.locals.recordLoginResult) {
+          await res.locals.recordLoginResult(false, '用户名密码不匹配');
+        }
+        
+        res.send({
+          code: 1,
+          msg: '用户名密码不匹配',
+        });
+      } else {
+        // 登录成功，记录成功尝试
+        if (res.locals.recordLoginResult) {
+          await res.locals.recordLoginResult(true, '登录成功');
+        }
+        
+        //生成token
+        const token = JWT.generate(
+          {
+            _id: result[0]._id,
+            username: result[0].username,
+          },
+          '1d'
+        );
+        res.header('Authorization', token);
 
-      res.send({
-        code: 0,
-        ActionType: 'OK',
-        data: {
-          username: result[0].username,
-          gender: result[0].gender ? result[0].gender : 0, //性别 ,0,1,2
-          introduction: result[0].introduction, //简介
-          avatar: result[0].avatar,
-          role: result[0].role,
-        },
+        res.send({
+          code: 0,
+          ActionType: 'OK',
+          data: {
+            username: result[0].username,
+            gender: result[0].gender ? result[0].gender : 0, //性别 ,0,1,2
+            introduction: result[0].introduction, //简介
+            avatar: result[0].avatar,
+            role: result[0].role,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('登录处理失败:', error);
+      
+      // 记录错误
+      if (res.locals.recordLoginResult) {
+        await res.locals.recordLoginResult(false, '服务器错误');
+      }
+      
+      res.status(500).send({
+        code: 1,
+        msg: '服务器内部错误',
       });
     }
   },

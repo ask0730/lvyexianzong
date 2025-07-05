@@ -18,8 +18,9 @@ instance.interceptors.request.use(config => {
 // 响应拦截器
 instance.interceptors.response.use(
   response => {
-    const { authorization } = response.headers;
-    authorization && localStorage.setItem('token', authorization);
+    const { authorization, Authorization } = response.headers;
+    const token = authorization || Authorization;
+    token && localStorage.setItem('token', token);
     return response.data;
   },
   reason => {

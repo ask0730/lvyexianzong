@@ -25,6 +25,16 @@
                 <el-menu-item index="/user-manage/userlist">用户列表</el-menu-item>
             </el-sub-menu>
 
+            <el-sub-menu index="/admin" v-admin>
+                <template #title>
+                    <el-icon>
+                        <setting />
+                    </el-icon>
+                    <span>系统管理</span>
+                </template>
+                <el-menu-item index="/admin/login-attempts">登录尝试管理</el-menu-item>
+            </el-sub-menu>
+
             <el-sub-menu index="/news-manage">
                 <template #title>
                     <el-icon>
