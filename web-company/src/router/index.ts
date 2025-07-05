@@ -59,10 +59,10 @@ const router = createRouter({
 
 // 添加全局导航守卫
 router.beforeEach((to, from, next) => {
-  const accessToken = localStorage.getItem('accessToken')
+  const token = localStorage.getItem('token')
   
   if (to.meta.requiresAuth) {
-    if (accessToken) {
+    if (token) {
       next()
     } else {
       next('/login')

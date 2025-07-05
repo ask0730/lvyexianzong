@@ -163,13 +163,12 @@ const handleLogin = () => {
                     captchaVerified: true,
                 })
 
-                // 存储用户信息和双token
+                // 存储用户信息和 token
                 localStorage.setItem('userInfo', JSON.stringify(response.data.data))
-                localStorage.setItem('accessToken', response.data.accessToken)
-                localStorage.setItem('refreshToken', response.data.refreshToken)
+                localStorage.setItem('token', response.data.token)
 
                 // 设置 axios 默认请求头
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
 
                 ElMessage.success(response.data.message || '登录成功')
                 router.push('/profile')

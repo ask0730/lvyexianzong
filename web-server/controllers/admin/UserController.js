@@ -41,12 +41,15 @@ const UserController = {
           await res.locals.recordLoginResult(true, '登录成功');
         }
         
-        //生成双token
-        const tokens = JWT.generateTokens({
-          _id: result[0]._id,
-          username: result[0].username,
-        });
-        res.header('Authorization', tokens.accessToken);
+        //生成token
+        const token = JWT.generate(
+          {
+            _id: result[0]._id,
+            username: result[0].username,
+          },
+          '1d'
+        );
+        res.header('Authorization', token);
 
         res.send({
           code: 0,
@@ -58,8 +61,6 @@ const UserController = {
             avatar: result[0].avatar,
             role: result[0].role,
           },
-          accessToken: tokens.accessToken,
-          refreshToken: tokens.refreshToken
         });
       }
     } catch (error) {
