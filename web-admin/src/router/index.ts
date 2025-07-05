@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
   if (to.name === 'login') {
     next();
   } else {
-    if (!localStorage.getItem('token')) {
+    if (!localStorage.getItem('accessToken')) {
       next({
         path: '/login',
       });

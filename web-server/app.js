@@ -115,17 +115,15 @@ app.use((req, res, next) => {
     }
 
     const token = tokenParts[1];
-    const payload = JWT.verify(token);
+    const payload = JWT.verifyAccessToken(token);
     
     if (payload) {
-      const newToken = JWT.generate(
-        {
-          _id: payload._id,
-          username: payload.username,
-        },
-        '1d'
-      );
-      res.header('Authorization', newToken);
+      const newTokens = JWT.generateTokens({
+        _id: payload._id,
+        username: payload.username,
+      });
+      res.header('Authorization', newTokens.accessToken);
+      res.header('X-New-Refresh-Token', newTokens.refreshToken);
       next();
     } else {
       res.status(401).json({ 
