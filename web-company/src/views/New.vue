@@ -1,92 +1,94 @@
 <template>
-    <div class="flower-container">
-        <div v-for="n in 30" :key="n" 
-             class="flower"
-             :style="{
-                 left: Math.random() * 100 + '%',
-                 top: -20 + 'px',
-                 width: 10 + Math.random() * 10 + 'px',
-                 height: 10 + Math.random() * 10 + 'px',
-                 animationDuration: 5 + Math.random() * 5 + 's',
-                 animationDelay: Math.random() * 5 + 's'
-             }">
+    <div>
+        <div class="flower-container">
+            <div
+                v-for="n in 30"
+                :key="n"
+                class="flower"
+                :style="{
+                     left: Math.random() * 100 + '%',
+                     top: -20 + 'px',
+                     width: 10 + Math.random() * 10 + 'px',
+                     height: 10 + Math.random() * 10 + 'px',
+                     animationDuration: 5 + Math.random() * 5 + 's',
+                     animationDelay: Math.random() * 5 + 's'
+                 }"
+            ></div>
         </div>
-    </div>
-    <el-row>
-        <el-col :span="17" :offset="1">
-            <div>
-                <h2>{{ currentNews.title }}</h2>
+        <el-row>
+            <el-col :span="17" :offset="1">
+                <div>
+                    <h2>{{ currentNews.title }}</h2>
 
-                <div class="time">
-                    {{ formatTime(currentNews.editTime) }}
-                    <el-button v-if="currentNews._id" type="primary" size="small" @click="toggleCollect">
+                    <div class="time">
+                        {{ formatTime(currentNews.editTime) }}
+                        <el-button v-if="currentNews._id" type="primary" size="small" @click="toggleCollect">
+                            <el-icon>
+                                <Star />
+                            </el-icon>
+                            {{ isCollected ? '已收藏' : '收藏' }}
+                        </el-button>
+                        <el-button v-if="currentNews._id" :type="isLiked ? 'danger' : 'default'" size="small" @click="toggleLike">
+                            <el-icon>
+                                <Pointer />
+                            </el-icon>
+                            {{ isLiked ? '已点赞' : '点赞' }} ({{ likeCount }})
+                        </el-button>
+                    </div>
+
+                    <el-divider>
                         <el-icon>
-                            <Star />
+                            <star-filled />
                         </el-icon>
-                        {{ isCollected ? '已收藏' : '收藏' }}
-                    </el-button>
-                    <el-button v-if="currentNews._id" :type="isLiked ? 'danger' : 'default'" size="small" @click="toggleLike">
-                        <el-icon>
-                            <Pointer />
-                        </el-icon>
-                        {{ isLiked ? '已点赞' : '点赞' }} ({{ likeCount }})
-                    </el-button>
-                </div>
+                    </el-divider>
 
-                <el-divider>
-                    <el-icon>
-                        <star-filled />
-                    </el-icon>
-                </el-divider>
+                    <div v-html="currentNews.content"></div>
 
-                <div v-html="currentNews.content"></div>
+                    <!-- 新增字数显示区域 -->
+                    <div class="word-count">本文字数：{{ contentWordCount }} 字</div>
 
-                <!-- 新增字数显示区域 -->
-                <div class="word-count">
-                    本文字数：{{ contentWordCount }} 字
-                </div>
+                    <!-- 评论区 -->
+                    <el-divider>评论区</el-divider>
 
-                <!-- 评论区 -->
-                <el-divider>评论区</el-divider>
+                    <!-- 评论输入框 -->
+                    <div class="comment-input" v-if="currentNews._id">
+                        <el-input v-model="commentContent" type="textarea" :rows="3" placeholder="请输入您的评论" />
+                        <el-button type="primary" @click="submitComment" style="margin-top: 10px">发表评论</el-button>
+                    </div>
 
-                <!-- 评论输入框 -->
-                <div class="comment-input" v-if="currentNews._id">
-                    <el-input v-model="commentContent" type="textarea" :rows="3" placeholder="请输入您的评论" />
-                    <el-button type="primary" @click="submitComment" style="margin-top: 10px">发表评论</el-button>
-                </div>
-
-                <!-- 评论列表 -->
-                <div class="comment-list">
-                    <div v-for="comment in comments" :key="comment._id" class="comment-item">
-                        <el-avatar :src="comment.userId.avatar ? 'http://localhost:3000' + comment.userId.avatar : ''" :size="40">{{ comment.userId.username?.charAt(0) }}</el-avatar>
-                        <div class="comment-content">
-                            <div class="comment-header">
-                                <span class="username">{{ comment.userId.username }}</span>
-                                <span class="time">{{ formatTime(comment.createdTime) }}</span>
+                    <!-- 评论列表 -->
+                    <div class="comment-list">
+                        <div v-for="comment in comments" :key="comment._id" class="comment-item">
+                            <el-avatar :src="comment.userId?.avatar ? 'http://localhost:3000' + comment.userId.avatar : ''" :size="40">{{ comment.userId?.username?.charAt(0) || 'U' }}</el-avatar>
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="username">{{ comment.userId?.username || '匿名用户' }}</span>
+                                    <span class="time">{{ formatTime(comment.createdTime) }}</span>
+                                </div>
+                                <div class="comment-text">{{ comment.content }}</div>
                             </div>
-                            <div class="comment-text">{{ comment.content }}</div>
+                        </div>
+                        <el-empty v-if="!comments.length" description="暂无评论" />
+                    </div>
+                </div>
+            </el-col>
+            <el-col :span="4" :offset="1" :pull="1">
+                <el-card class="box-card">
+                    <template #header>
+                        <div class="card-header">
+                            <span style="font-size: 16px; font-weight: bold">最近文章</span>
+                        </div>
+                    </template>
+                    <div v-for="item in topNews" :key="item._id" class="text item" style="padding: 14px" @click="handleChange(item._id)">
+                        <span>{{ item.title }}</span>
+                        <div class="bottom">
+                            <time class="time">{{ formatTime(item.editTime) }}</time>
                         </div>
                     </div>
-                    <el-empty v-if="!comments.length" description="暂无评论" />
-                </div>
-            </div>
-        </el-col>
-        <el-col :span="4" :offset="1" :pull="1">
-            <el-card class="box-card">
-                <template #header>
-                    <div class="card-header">
-                        <span style="font-size: 16px; font-weight: bold">最近文章</span>
-                    </div>
-                </template>
-                <div v-for="item in topNews" :key="item._id" class="text item" style="padding: 14px" @click="handleChange(item._id)">
-                    <span>{{ item.title }}</span>
-                    <div class="bottom">
-                        <time class="time">{{ formatTime(item.editTime) }}</time>
-                    </div>
-                </div>
-            </el-card>
-        </el-col>
-    </el-row>
+                </el-card>
+            </el-col>
+        </el-row>
+    </div>
 </template>
 
 <script setup>
@@ -97,6 +99,7 @@ import { formatTime } from '@/utils'
 import API from '@/api'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { TokenManager } from '@/utils/token'
 
 const route = useRoute()
 const router = useRouter()
@@ -110,11 +113,11 @@ const comments = ref([])
 
 // 新增计算属性：文章内容字数
 const contentWordCount = computed(() => {
-    const content = currentNews.value.content || '';
+    const content = currentNews.value.content || ''
     // 正则表达式去除所有HTML标签，保留纯文本
-    const pureText = content.replace(/<[^>]*>/g, '').trim(); 
-    return pureText.length; // 返回字数（包括中英文、数字、符号）
-});
+    const pureText = content.replace(/<[^>]*>/g, '').trim()
+    return pureText.length // 返回字数（包括中英文、数字、符号）
+})
 
 const stop = watchEffect(async () => {
     if (!route.params.id) return
@@ -153,7 +156,7 @@ onBeforeUnmount(() => {
 })
 
 const checkCollectionStatus = async () => {
-    const token = localStorage.getItem('token')
+    const token = TokenManager.getToken()
     if (!token) return
 
     try {
@@ -177,7 +180,7 @@ const checkLikeStatus = async () => {
     try {
         const response = await axios.get(`/webapi/like/status/${currentNews.value._id}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                Authorization: `Bearer ${TokenManager.getToken()}`,
                 'Content-Type': 'application/json',
             },
         })
@@ -213,7 +216,7 @@ const getLikeCount = async () => {
 }
 
 const toggleLike = async () => {
-    const token = localStorage.getItem('token')
+    const token = TokenManager.getToken()
     if (!token) {
         router.push('/login')
         return
@@ -251,7 +254,7 @@ const toggleLike = async () => {
 }
 
 const toggleCollect = async () => {
-    const token = localStorage.getItem('token')
+    const token = TokenManager.getToken()
     if (!token) {
         router.push('/login')
         return
@@ -304,7 +307,7 @@ const getComments = async () => {
 
 // 提交评论
 const submitComment = async () => {
-    const token = localStorage.getItem('token')
+    const token = TokenManager.getToken()
     if (!token) {
         router.push('/login')
         return
@@ -362,7 +365,7 @@ const submitComment = async () => {
     background: rgba(102, 236, 154, 0.514);
     border-radius: 50%;
     animation: fall linear infinite;
-    
+
     &::before {
         content: '';
         position: absolute;
@@ -372,7 +375,7 @@ const submitComment = async () => {
         border-radius: inherit;
         transform: rotate(45deg);
     }
-    
+
     &::after {
         content: '';
         position: absolute;
