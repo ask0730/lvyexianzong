@@ -3,39 +3,50 @@
         <el-card>
             <el-page-header content="文章列表" icon title="文章管理" />
 
-            <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="title" label="标题" width="180" />
-                <el-table-column label="分类">
-                    <template #default="scope">{{ categoryFormat(scope.row.category) }}</template>
-                </el-table-column>
+            <!-- 虚拟表格 -->
+            <VirtualTable
+                :data="tableData"
+                :columns="columns"
+                :row-height="60"
+                :buffer-size="10"
+                item-key="_id"
+                :loading="loading"
+                :searchable="true"
+                :sortable="true"
+                class="virtual-table-wrapper"
+                @search="handleSearch"
+                @sort="handleSort"
+                @row-click="handleRowClick"
+            >
+                <!-- 分类列 -->
+                <template #category="{ row }">{{ categoryFormat(row.category) }}</template>
 
-                <el-table-column label="更新时间">
-                    <template #default="scope">{{ formatTime(scope.row.editTime) }}</template>
-                </el-table-column>
-                <el-table-column label="是否发布">
-                    <template #default="scope">
-                        <el-switch v-model="scope.row.isPublish" :active-value="1" :inactive-value="0" @change="handleSwitchChange(scope.row)" />
-                    </template>
-                </el-table-column>
+                <!-- 更新时间列 -->
+                <template #editTime="{ row }">{{ formatTime(row.editTime) }}</template>
 
-                <el-table-column label="操作">
-                    <template #default="scope">
-                        <el-button circle :icon="Star" type="success" @click="handlePreview(scope.row)"></el-button>
-                        <el-button circle :icon="Edit" @click="handleEdit(scope.row)"></el-button>
+                <!-- 发布状态列 -->
+                <template #isPublish="{ row }">
+                    <el-switch v-model="row.isPublish" :active-value="1" :inactive-value="0" @change="handleSwitchChange(row)" />
+                </template>
 
-                        <el-popconfirm title="你确定要删除吗?" confirmButtonText="确定" cancelButtonText="取消" @confirm="handleDelete(scope.row)">
-                            <template #reference>
-                                <el-button circle :icon="Delete" type="danger"></el-button>
-                            </template>
-                        </el-popconfirm>
-                    </template>
-                </el-table-column>
-            </el-table>
+                <!-- 操作列 -->
+                <template #actions="{ row }">
+                    <el-button circle :icon="Star" type="success" @click="handlePreview(row)"></el-button>
+                    <el-button circle :icon="Edit" @click="handleEdit(row)"></el-button>
+                    <el-popconfirm title="你确定要删除吗?" confirmButtonText="确定" cancelButtonText="取消" @confirm="handleDelete(row)">
+                        <template #reference>
+                            <el-button circle :icon="Delete" type="danger"></el-button>
+                        </template>
+                    </el-popconfirm>
+                </template>
+            </VirtualTable>
+
+            <!-- 分页器 -->
             <div class="pagination-container">
                 <el-pagination
-                    v-model:current-page="currentPage"
-                    v-model:page-size="pageSize"
-                    :page-sizes="[10, 20, 30, 50]"
+                    :current-page="currentPage"
+                    :page-size="pageSize"
+                    :page-sizes="[10, 20, 30, 50, 100]"
                     :total="total"
                     layout="total, sizes, prev, pager, next, jumper"
                     @size-change="handleSizeChange"
@@ -61,11 +72,12 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { formatTime } from '@/utils'
 import { Star, Edit, Delete, StarFilled } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import API from '@/api'
+import VirtualTable from '@/components/VirtualTable.vue'
 
 const router = useRouter()
 const tableData = ref([])
@@ -74,20 +86,80 @@ const dialogVisible = ref(false)
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const loading = ref(false)
+
+// 虚拟表格列配置
+const columns = computed(() => [
+    {
+        prop: 'title',
+        label: '标题',
+        width: '300px',
+        minWidth: '200px',
+    },
+    {
+        prop: 'category',
+        label: '分类',
+        width: '120px',
+        slot: 'category',
+    },
+    {
+        prop: 'editTime',
+        label: '更新时间',
+        width: '180px',
+        slot: 'editTime',
+    },
+    {
+        prop: 'isPublish',
+        label: '是否发布',
+        width: '120px',
+        slot: 'isPublish',
+    },
+    {
+        prop: 'actions',
+        label: '操作',
+        width: '200px',
+        slot: 'actions',
+    },
+])
 
 onMounted(() => {
     getTableData()
 })
 
 const getTableData = async () => {
-    const res = await API.news.list({
-        page: currentPage.value,
-        pageSize: pageSize.value
-    })
-    if (res.code === 0) {
-        tableData.value = res.data.list
-        total.value = res.data.total
+    loading.value = true
+    try {
+        const res = await API.news.list({
+            page: currentPage.value,
+            pageSize: pageSize.value,
+        })
+        if (res.code === 0) {
+            tableData.value = res.data.list
+            total.value = res.data.total
+        }
+    } catch (error) {
+        console.error('获取数据失败:', error)
+    } finally {
+        loading.value = false
     }
+}
+
+// 处理搜索
+const handleSearch = (keyword: string) => {
+    console.log('搜索关键词:', keyword)
+    // 这里可以实现本地搜索或调用API搜索
+}
+
+// 处理排序
+const handleSort = (column: string, order: 'asc' | 'desc') => {
+    console.log('排序:', column, order)
+    // 这里可以实现本地排序或调用API排序
+}
+
+// 处理行点击
+const handleRowClick = (item: any, index: number) => {
+    console.log('点击行:', item, index)
+    // 可以在这里添加行点击逻辑
 }
 
 const handlePageChange = (page: number) => {
@@ -139,8 +211,9 @@ const handleEdit = (item: any) => {
 }
 </script>
 <style lang="scss" scoped>
-.el-table {
+.virtual-table-wrapper {
     margin-top: 50px;
+    margin-bottom: 20px;
 }
 
 .pagination-container {
@@ -153,5 +226,36 @@ const handleEdit = (item: any) => {
     img {
         max-width: 100%;
     }
+}
+
+// 虚拟表格样式优化
+:deep(.virtual-table-container) {
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+:deep(.virtual-table-header) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+:deep(.virtual-table-header-cell) {
+    color: white;
+    font-weight: 600;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+:deep(.virtual-table-row) {
+    &:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    &:hover {
+        background-color: #e6f7ff !important;
+    }
+}
+
+:deep(.virtual-table-cell) {
+    padding: 16px 12px;
+    font-size: 14px;
 }
 </style>
