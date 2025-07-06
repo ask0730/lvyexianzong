@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const UserRouter = require('./routes/admin/UserRouter');
 const LoginAttemptRouter = require('./routes/admin/LoginAttemptRouter');
+const MenuRouter = require('./routes/admin/MenuRouter');
 const JWT = require('./utils/JWT');
 const NewsRouter = require('./routes/admin/NewsRouter');
 const ProductRouter = require('./routes/admin/ProductRouter');
@@ -146,6 +147,7 @@ app.use((req, res, next) => {
 
 app.use(UserRouter);
 app.use(LoginAttemptRouter);
+app.use(MenuRouter);
 app.use(NewsRouter);
 app.use(ProductRouter);
 

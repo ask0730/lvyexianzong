@@ -10,6 +10,9 @@ export const setupStore = (app: App<Element>) => {
   app.use(store);
 };
 
+// 导出所有store
+export { useMenuStore } from './modules/menu';
+
 export const useToolStore = defineStore('tool', {
   state: () => {
     return {
