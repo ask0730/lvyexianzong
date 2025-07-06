@@ -17,6 +17,7 @@ const webViewRecordRouter = require('./routes/web/ViewRecordRouter');
 const webLikeRouter = require('./routes/web/likeRoutes');
 const webCommentRouter = require('./routes/web/commentRouter');
 const webChatRouter = require('./routes/web/index');
+const webCaptchaRouter = require('./routes/web/captcha');
 const crawlerRouter = require('./routes/crawler/index');
 
 var app = express();
@@ -78,6 +79,7 @@ app.use(webNewsRouter);
 app.use(webProductRouter);
 app.use(webViewRecordRouter);
 app.use('/webapi', webChatRouter);
+app.use('/webapi/captcha', webCaptchaRouter);
 app.use('/', crawlerRouter);
 
 /*

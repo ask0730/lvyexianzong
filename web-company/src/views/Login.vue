@@ -13,7 +13,24 @@
                     <div class="captcha-wrapper">
                         <div class="captcha-container" ref="captchaContainer">
                             <div class="captcha-bg">
-                                <div class="captcha-text">{{ captchaText }}</div>
+                                <img v-if="captchaBgImage" :src="captchaBgImage" alt="验证码背景" class="captcha-bg-img" />
+                                <img
+                                    v-if="captchaBlockImage && !isVerified"
+                                    :src="captchaBlockImage"
+                                    alt="拼图块"
+                                    class="captcha-block-img"
+                                    :style="{
+                                    top: puzzleTop + 'px',
+                                    left: sliderLeft + 'px',
+                                    width: puzzleSize + 'px',
+                                    height: puzzleSize + 'px',
+                                    position: 'absolute',
+                                    pointerEvents: 'none',
+                                    zIndex: 10
+                                  }"
+                                    draggable="false"
+                                />
+                                <div v-if="!captchaBgImage" class="captcha-text">{{ captchaText }}</div>
                             </div>
                             <div class="captcha-slider" ref="captchaSlider" @mousedown="startDrag" @touchstart="startDrag" :style="{ left: sliderLeft + 'px' }">
                                 <div class="slider-text">{{ isVerified ? '✓' : '>>' }}</div>
@@ -21,6 +38,7 @@
                             <div class="captcha-track" ref="captchaTrack"></div>
                         </div>
                         <div class="captcha-tip" v-if="!isVerified">{{ tipText }}</div>
+                        <el-button v-if="!isVerified" type="text" size="small" @click="refreshCaptcha" class="refresh-btn">刷新验证码</el-button>
                     </div>
                 </el-form-item>
                 <el-form-item class="form-buttons">
@@ -38,6 +56,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import axios from 'axios'
+import { generateCaptcha, verifyCaptcha } from '../api/captcha'
 
 const router = useRouter()
 const loading = ref(false)
@@ -50,8 +69,13 @@ const sliderLeft = ref(0)
 const isVerified = ref(false)
 const isDragging = ref(false)
 const startX = ref(0)
-const captchaText = ref('请向右滑动验证')
-const tipText = ref('请将滑块拖到最右边')
+const captchaText = ref('请将滑块拖到拼图缺口')
+const tipText = ref('拖动滑块到拼图位置')
+const captchaBgImage = ref('')
+const captchaBlockImage = ref('')
+const puzzleTop = ref(0)
+const puzzleSize = ref(40)
+const captchaSessionId = ref('')
 
 const maxLeft = ref(0)
 
@@ -73,17 +97,47 @@ const loginRules = {
 
 onMounted(() => {
     maxLeft.value = 300 - 40 // 滑块宽度为40px
-    generateCaptcha()
+    initCaptcha()
 })
 
 onUnmounted(() => {
     removeEventListeners()
 })
 
-const generateCaptcha = () => {
+const initCaptcha = async () => {
+    try {
+        const response = await generateCaptcha({ width: 300, height: 150 })
+        if (response.code === 0) {
+            captchaBgImage.value = response.data.bgImage
+            captchaBlockImage.value = response.data.blockImage
+            captchaSessionId.value = response.data.sessionId
+            puzzleTop.value = response.data.puzzleTop
+            puzzleSize.value = response.data.puzzleSize
+            captchaText.value = '请将滑块拖到拼图缺口'
+            tipText.value = '拖动滑块到拼图位置'
+            sliderLeft.value = 0
+            isVerified.value = false
+        } else {
+            generateFrontendCaptcha()
+        }
+    } catch (error) {
+        console.error('生成验证码失败:', error)
+        generateFrontendCaptcha()
+    }
+}
+
+const generateFrontendCaptcha = () => {
     // 生成随机验证文本
     const texts = ['请向右滑动验证', '滑动完成验证', '拖动滑块验证', '向右滑动解锁']
     captchaText.value = texts[Math.floor(Math.random() * texts.length)]
+    captchaBgImage.value = ''
+    captchaBlockImage.value = ''
+    captchaSessionId.value = ''
+}
+
+const refreshCaptcha = () => {
+    resetCaptcha()
+    initCaptcha()
 }
 
 const startDrag = (e: MouseEvent | TouchEvent) => {
@@ -108,21 +162,44 @@ const onDrag = (e: MouseEvent | TouchEvent) => {
     sliderLeft.value = Math.max(0, Math.min(newLeft, maxLeft.value))
 }
 
-const endDrag = () => {
+const endDrag = async () => {
     if (!isDragging.value) return
 
     isDragging.value = false
     removeEventListeners()
 
-    // 检查是否滑到最右边
-    if (sliderLeft.value >= maxLeft.value - 5) {
-        isVerified.value = true
-        captchaText.value = '验证成功'
-        tipText.value = '验证通过'
+    if (captchaSessionId.value) {
+        try {
+            const response = await verifyCaptcha({
+                sessionId: captchaSessionId.value,
+                sliderLeft: sliderLeft.value,
+            })
+
+            if (response.code === 0 && response.data.verified) {
+                isVerified.value = true
+                captchaText.value = '验证成功'
+                tipText.value = '验证通过'
+            } else {
+                sliderLeft.value = 0
+                ElMessage.error('验证失败，请重试')
+                refreshCaptcha()
+            }
+        } catch (error) {
+            console.error('验证码验证失败:', error)
+            sliderLeft.value = 0
+            ElMessage.error('验证失败，请重试')
+            refreshCaptcha()
+        }
     } else {
-        // 重置滑块位置
-        sliderLeft.value = 0
-        generateCaptcha()
+        // 前端验证码逻辑
+        if (sliderLeft.value >= maxLeft.value - 5) {
+            isVerified.value = true
+            captchaText.value = '验证成功'
+            tipText.value = '验证通过'
+        } else {
+            sliderLeft.value = 0
+            generateFrontendCaptcha()
+        }
     }
 }
 
@@ -143,8 +220,8 @@ const removeEventListeners = () => {
 const resetCaptcha = () => {
     isVerified.value = false
     sliderLeft.value = 0
-    generateCaptcha()
-    tipText.value = '请将滑块拖到最右边'
+    captchaText.value = '请将滑块拖到拼图缺口'
+    tipText.value = '拖动滑块到拼图位置'
 }
 
 const handleLogin = () => {
@@ -255,16 +332,20 @@ const handleRegister = () => {
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: linear-gradient(90deg, #e8f5e8 0%, #f0f8f0 100%);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 1;
-
-                    .captcha-text {
-                        color: #666;
-                        font-size: 14px;
-                        font-weight: 500;
+                    .captcha-bg-img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: 4px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        z-index: 1;
+                    }
+                    .captcha-block-img {
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                        border-radius: 8px;
+                        pointer-events: none;
                     }
                 }
 
@@ -311,6 +392,12 @@ const handleRegister = () => {
                 font-size: 12px;
                 color: #999;
                 text-align: center;
+            }
+
+            .refresh-btn {
+                margin-top: 8px;
+                color: var(--el-color-primary);
+                font-size: 12px;
             }
         }
     }
