@@ -57,6 +57,7 @@ import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { generateCaptcha, verifyCaptcha } from '../api/captcha'
+import { TokenManager } from '../utils/token'
 
 const router = useRouter()
 const loading = ref(false)
@@ -241,8 +242,8 @@ const handleLogin = () => {
                 })
 
                 // 存储用户信息和 token
-                localStorage.setItem('userInfo', JSON.stringify(response.data.data))
-                localStorage.setItem('token', response.data.token)
+                TokenManager.setUserInfo(response.data.data)
+                TokenManager.setTokens(response.data.token, response.data.refreshToken)
 
                 // 设置 axios 默认请求头
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`

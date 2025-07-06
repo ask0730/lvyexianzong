@@ -142,13 +142,15 @@ router.post('/login', async (req, res) => {
     }
 
     // 生成 JWT Token
-    const token = JWT.generate(
-      {
-        _id: user._id,
-        username: user.username,
-      },
-      '1d'
-    );
+    const accessToken = JWT.generateAccessToken({
+      _id: user._id,
+      username: user.username,
+    });
+    
+    const refreshToken = JWT.generateRefreshToken({
+      _id: user._id,
+      username: user.username,
+    });
 
     // 返回登录成功响应
     res.status(200).json({ 
@@ -161,7 +163,8 @@ router.post('/login', async (req, res) => {
         introduction: user.introduction,
         gender: user.gender
       },
-      token: token
+      token: accessToken,
+      refreshToken: refreshToken
     });
 
   } catch (error) {
@@ -231,6 +234,66 @@ router.post('/update', async (req, res) => {
 
   } catch (error) {
     console.error('更新用户信息错误:', error);
+
+    res.status(500).json({ 
+      code: 1,
+      message: '服务器错误，请稍后重试',
+      error: process.env.NODE_ENV === 'development' ? error.message : '内部服务器错误'
+    });
+  }
+});
+
+// 刷新令牌路由
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ 
+        code: 1,
+        message: '刷新令牌不能为空' 
+      });
+    }
+
+    // 验证刷新令牌
+    const decoded = JWT.verifyRefreshToken(refreshToken);
+    if (!decoded) {
+      return res.status(401).json({ 
+        code: 1,
+        message: '刷新令牌无效或已过期' 
+      });
+    }
+
+    // 查找用户
+    const user = await UserModel.findById(decoded._id);
+    if (!user) {
+      return res.status(401).json({ 
+        code: 1,
+        message: '用户不存在' 
+      });
+    }
+
+    // 生成新的访问令牌
+    const newAccessToken = JWT.generateAccessToken({
+      _id: user._id,
+      username: user.username,
+    });
+
+    // 生成新的刷新令牌
+    const newRefreshToken = JWT.generateRefreshToken({
+      _id: user._id,
+      username: user.username,
+    });
+
+    res.status(200).json({ 
+      code: 0,
+      message: '令牌刷新成功',
+      token: newAccessToken,
+      refreshToken: newRefreshToken
+    });
+
+  } catch (error) {
+    console.error('刷新令牌错误:', error);
 
     res.status(500).json({ 
       code: 1,
