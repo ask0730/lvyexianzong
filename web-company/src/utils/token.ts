@@ -40,7 +40,8 @@ export class TokenManager {
 
   // 检查是否已登录
   static isLoggedIn(): boolean {
-    return !!this.getToken() && !!this.getRefreshToken();
+    // 只要有refreshToken就认为可以登录（可以自动刷新access token）
+    return !!this.getRefreshToken();
   }
 
   // 检查token是否即将过期（提前5分钟刷新）
