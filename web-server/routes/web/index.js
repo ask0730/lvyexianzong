@@ -47,4 +47,8 @@ router.post('/chat/send', AuthMiddleware.requireAuth, async (req, res) => {
 // 注册验证码路由
 router.use('/captcha', captchaRouter);
 
+// 注册上传相关路由
+const uploadRouter = require('./upload');
+router.use('/upload', uploadRouter);
+
 module.exports = router;
