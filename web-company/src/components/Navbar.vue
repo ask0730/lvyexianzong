@@ -107,6 +107,12 @@ const logout = () => {
 </script>
 
 <style scoped lang="scss">
+.navbar,
+.nav-links,
+.nav-item {
+    font-family: 'Microsoft YaHei', 'Arial', sans-serif !important;
+}
+
 .navbar {
     position: fixed;
     top: 0;

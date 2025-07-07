@@ -1,1 +1,13 @@
 @use './common.scss';
+
+@font-face {
+  font-family: 'Kai';
+  src: url('@/assets/kai.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Kai', 'Microsoft YaHei', 'Arial', sans-serif;
+}
