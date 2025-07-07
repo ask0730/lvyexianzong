@@ -11,8 +11,8 @@
                 </el-input>
                 <div class="sort-section">
                     <el-radio-group v-model="sortType" size="default" @change="handleSortChange">
-                        <el-radio-button label="publish">发布顺序</el-radio-button>
-                        <el-radio-button label="likes">点赞量顺序</el-radio-button>
+                        <el-radio :value="'publish'">发布顺序</el-radio>
+                        <el-radio :value="'likes'">点赞量顺序</el-radio>
                     </el-radio-group>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                     <div v-for="item in filteredProducts" :key="item.id" class="product-item" @click="selectProduct(item)">
                         <el-card class="box-card" :class="{ 'selected': selectedProduct?.id === item.id }" shadow="hover">
                             <div class="product-img">
-                                <img :src="`/images/${item.cover}`" alt="产品图片" />
+                                <img v-lazy="`/images/${item.cover}`" alt="产品图片" />
                             </div>
                             <div class="product-info">
                                 <h2 class="product-title">{{ item.title }}</h2>
@@ -52,7 +52,7 @@
                     <div v-for="item in recommendedProducts" :key="item.id" class="recommendation-item">
                         <el-card class="recommendation-card" shadow="hover">
                             <div class="recommendation-img">
-                                <img :src="`/images/${item.cover}`" alt="产品图片" />
+                                <img v-lazy="`/images/${item.cover}`" alt="产品图片" />
                             </div>
                             <div class="recommendation-info">
                                 <h4 class="recommendation-title">{{ item.title }}</h4>
