@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'Kai';
+  src: url('@/assets/kai.woff2') format('woff2');
+  font-display: swap;
+}
+
 .main-content {
   padding-top: 64px; /* 根据您的导航栏高度调整此值 */
+}
+
+body {
+  font-family: 'Kai', sans-serif;
 } 
