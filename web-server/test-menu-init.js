@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 const MenuService = require('./services/admin/MenuService');
 
 // 连接数据库
-mongoose.connect('mongodb://localhost:27017/lvyexianzong', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect('mongodb://localhost:27017/lvyexianzong');
 
 async function testMenuInit() {
   try {

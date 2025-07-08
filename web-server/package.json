@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node-dev ./bin/www"
+    "start": "node-dev ./bin/www",
+    "test": "jest"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -24,5 +25,9 @@
     "puppeteer": "^24.7.2",
     "sharp": "^0.34.2",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "supertest": "^7.1.3"
   }
 }

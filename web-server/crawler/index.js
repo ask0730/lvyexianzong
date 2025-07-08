@@ -26,9 +26,7 @@ class SpiderNewsService {
         try {
             await mongoose.connect('mongodb://127.0.0.1:27017/company-system', {
                 serverSelectionTimeoutMS: 5000,
-                retryWrites: true,
-                useNewUrlParser: true,
-                useUnifiedTopology: true
+                retryWrites: true
             });
             console.log('数据库连接成功');
         } catch (err) {
