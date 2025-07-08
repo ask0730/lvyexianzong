@@ -11,6 +11,8 @@ import App from './App.vue';
 import VueLazyLoad from 'vue3-lazyload';
 import loadingImg from '@/assets/error/cloud.png';
 import errorImg from '@/assets/error/404.png';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
 
 const app = createApp(App);
 setupStore(app);

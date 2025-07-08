@@ -2,17 +2,25 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import viteCompression from 'vite-plugin-compression';
+import legacy from '@vitejs/plugin-legacy'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
-    plugins: [vue(), viteCompression({
-      verbose: true, // 输出压缩结果
-      disable: false, // 是否禁用
-      threshold: 10240, // 只压缩大于10kb的文件
-      algorithm: 'gzip', // 使用gzip压缩
-      ext: '.gz', // 生成的压缩包后缀
-    })],
+    plugins: [
+      vue(),
+      legacy({
+        targets: ['defaults', 'IE 11'],
+        additionalLegacyPolyfills: ['regenerator-runtime/runtime']
+      }),
+      viteCompression({
+        verbose: true, // 输出压缩结果
+        disable: false, // 是否禁用
+        threshold: 10240, // 只压缩大于10kb的文件
+        algorithm: 'gzip', // 使用gzip压缩
+        ext: '.gz', // 生成的压缩包后缀
+      })
+    ],
     resolve: {
       alias: {
         '@': resolve(__dirname, './src'),
