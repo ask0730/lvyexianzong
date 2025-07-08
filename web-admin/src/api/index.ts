@@ -38,5 +38,8 @@ export default {
     unlockUser: post('/adminapi/login-attempts/unlock-user'), // 解锁用户
     unlockIP: post('/adminapi/login-attempts/unlock-ip'), // 解锁IP
     cleanup: post('/adminapi/login-attempts/cleanup') // 清理记录
+  },
+  menu: {
+    init: post('/adminapi/menu/init') // 初始化菜单
   }
 };

@@ -19,7 +19,7 @@ class MenuController {
       const menuTree = await MenuService.getMenuTree(userRole);
       
       res.json({
-        code: 200,
+        code: 0,
         message: '获取菜单成功',
         data: menuTree
       });
@@ -37,7 +37,7 @@ class MenuController {
       const menus = await MenuService.getAllMenus();
       
       res.json({
-        code: 200,
+        code: 0,
         message: '获取菜单列表成功',
         data: menus
       });
@@ -63,7 +63,7 @@ class MenuController {
       }
       
       res.json({
-        code: 200,
+        code: 0,
         message: '获取菜单成功',
         data: menu
       });
@@ -82,7 +82,7 @@ class MenuController {
       const menu = await MenuService.createMenu(menuData);
       
       res.status(201).json({
-        code: 201,
+        code: 0,
         message: '创建菜单成功',
         data: menu
       });
@@ -110,7 +110,7 @@ class MenuController {
       }
       
       res.json({
-        code: 200,
+        code: 0,
         message: '更新菜单成功',
         data: menu
       });
@@ -136,7 +136,7 @@ class MenuController {
       }
       
       res.json({
-        code: 200,
+        code: 0,
         message: '删除菜单成功',
         data: menu
       });
@@ -163,7 +163,7 @@ class MenuController {
       const result = await MenuService.deleteMenus(ids);
       
       res.json({
-        code: 200,
+        code: 0,
         message: '批量删除菜单成功',
         data: result
       });
@@ -181,7 +181,7 @@ class MenuController {
       const result = await MenuService.initDefaultMenus();
       
       res.json({
-        code: 200,
+        code: 0,
         message: result.message,
         data: result
       });

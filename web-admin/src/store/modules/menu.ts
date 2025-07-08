@@ -29,13 +29,25 @@ export const useMenuStore = defineStore('menu', {
     async fetchMenuTree() {
       this.loading = true;
       this.error = '';
-      
       try {
         const response = await menuApi.getMenuTree();
-        if (response.code === 200) {
-          this.menuTree = response.data;
+        // response 已经是后端返回的res对象，code === 0 才会进入这里
+        if (Array.isArray(response.data) && response.data.length === 0) {
+          // 如果菜单为空，自动初始化
+          const initRes = await menuApi.initDefaultMenus();
+          if (initRes.code === 0) {
+            // 初始化成功后重新获取菜单
+            const retryRes = await menuApi.getMenuTree();
+            if (retryRes.code === 0) {
+              this.menuTree = retryRes.data;
+            } else {
+              this.error = retryRes.message || '获取菜单失败';
+            }
+          } else {
+            this.error = initRes.message || '初始化菜单失败';
+          }
         } else {
-          this.error = response.message || '获取菜单失败';
+          this.menuTree = response.data;
         }
       } catch (error: any) {
         this.error = error.message || '获取菜单失败';

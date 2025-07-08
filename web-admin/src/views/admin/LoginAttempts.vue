@@ -5,6 +5,7 @@
             <div class="header-actions">
                 <el-button type="primary" @click="refreshData">刷新数据</el-button>
                 <el-button type="warning" @click="showCleanupDialog">清理过期记录</el-button>
+                <el-button type="danger" @click="initMenu">初始化菜单</el-button>
             </div>
         </div>
 
@@ -429,6 +430,20 @@ const handleRecentPageChange = (page) => {
 // 格式化时间
 const formatTime = (time) => {
     return new Date(time).toLocaleString('zh-CN')
+}
+
+// 初始化菜单
+const initMenu = async () => {
+    try {
+        const res = await API.menu.init({})
+        if (res.code === 200) {
+            ElMessage.success(res.message || '初始化菜单成功')
+        } else {
+            ElMessage.error(res.message || '初始化菜单失败')
+        }
+    } catch (error) {
+        ElMessage.error('初始化菜单请求失败')
+    }
 }
 
 // 组件挂载时加载数据

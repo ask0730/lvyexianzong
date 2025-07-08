@@ -16,6 +16,8 @@ class MenuService {
         }
         return true;
       });
+      console.log('allMenus:', allMenus.map(m => m.title));
+      console.log('filteredMenus:', filteredMenus.map(m => m.title));
 
       // 构建树形结构
       return this.buildMenuTree(filteredMenus);
@@ -120,7 +122,9 @@ class MenuService {
   async initDefaultMenus() {
     try {
       const count = await Menu.countDocuments();
+      console.log('当前菜单数量:', count);
       if (count > 0) {
+        console.log('菜单已存在，跳过初始化');
         return { message: '菜单已存在，跳过初始化' };
       }
 
@@ -130,7 +134,7 @@ class MenuService {
           path: '/index',
           component: '@/views/home/Home.vue',
           icon: 'home-filled',
-          title: '首页',
+          title: '首页1111111',
           order: 1
         },
         {
@@ -237,7 +241,7 @@ class MenuService {
           path: '/admin',
           component: 'Layout',
           icon: 'setting',
-          title: '系统管理',
+          title: '系统管理11',
           order: 6,
           requireAdmin: true
         },
@@ -256,29 +260,37 @@ class MenuService {
       const parentMenus = defaultMenus.filter(menu => 
         !menu.path.includes('/') || menu.path.split('/').length === 2
       );
+      console.log('准备插入父菜单:', parentMenus.map(m => m.name));
 
       const createdMenus = [];
       for (const menu of parentMenus) {
         const created = await Menu.create(menu);
         createdMenus.push(created);
+        console.log('已插入父菜单:', created.name, created._id.toString());
       }
 
       // 创建子菜单
       const childMenus = defaultMenus.filter(menu => 
         menu.path.split('/').length > 2
       );
+      console.log('准备插入子菜单:', childMenus.map(m => m.name));
 
       for (const menu of childMenus) {
         const parentPath = menu.path.split('/').slice(0, -1).join('/');
         const parent = createdMenus.find(m => m.path === parentPath);
         if (parent) {
           menu.parentId = parent._id;
-          await Menu.create(menu);
+          const created = await Menu.create(menu);
+          console.log('已插入子菜单:', created.name, created._id.toString(), '父ID:', parent._id.toString());
+        } else {
+          console.log('未找到父菜单，跳过:', menu.name, '父路径:', parentPath);
         }
       }
 
+      console.log('默认菜单初始化完成');
       return { message: '默认菜单初始化成功' };
     } catch (error) {
+      console.error('初始化菜单失败:', error);
       throw new Error(`初始化菜单失败: ${error.message}`);
     }
   }

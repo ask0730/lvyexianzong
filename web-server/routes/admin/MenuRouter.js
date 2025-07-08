@@ -7,7 +7,10 @@ router.get('/adminapi/menu/tree', MenuController.getMenuTree);
 
 // 获取所有菜单（平铺结构，仅管理员）
 router.get('/adminapi/menu/list', MenuController.getAllMenus);
-
+console.log('1111111111111')
+// 初始化默认菜单（仅管理员）
+router.post('/adminapi/menu/init', MenuController.initDefaultMenus);
+console.log('22222222')
 // 根据ID获取菜单
 router.get('/adminapi/menu/:id', MenuController.getMenuById);
 
@@ -22,8 +25,5 @@ router.delete('/adminapi/menu/:id', MenuController.deleteMenu);
 
 // 批量删除菜单（仅管理员）
 router.delete('/adminapi/menu', MenuController.deleteMenus);
-
-// 初始化默认菜单（仅管理员）
-router.post('/adminapi/menu/init', MenuController.initDefaultMenus);
 
 module.exports = router; 
