@@ -2,7 +2,7 @@
     <div class="page-container">
         <div class="content">
             <div class="search-section">
-                <el-input v-model="searchQuery" placeholder="搜索农产品..." class="search-input" clearable @input="handleSearch">
+                <el-input v-model="searchQuery" placeholder="搜索农产品..." class="search-input" clearable @input="handleSearchDebounced">
                     <template #prefix>
                         <el-icon>
                             <Search />
@@ -84,6 +84,7 @@ import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 import { Recommender } from '@/utils/recommender'
 import Papa from 'papaparse'
+import { debounce } from '@/utils/throttleAndDebounce'
 
 const looplist: any = ref([])
 const searchQuery = ref('')
@@ -174,6 +175,8 @@ const handleSortChange = () => {
 const handleSearch = () => {
     // 可以在这里添加防抖逻辑
 }
+
+const handleSearchDebounced = debounce(handleSearch, 300)
 
 // 过滤产品列表
 const filteredProducts = computed(() => {

@@ -46,10 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { User, UserFilled, SwitchButton } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { debounce } from '@/utils/throttleAndDebounce'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,6 +84,18 @@ onMounted(updateUserInfo)
 
 // 监听路由变化，更新用户信息
 watch(() => route.path, updateUserInfo)
+
+const handleResize = debounce(() => {
+    // 这里可以添加窗口变化后的逻辑
+    // console.log('窗口大小变化（防抖）');
+}, 300)
+
+onMounted(() => {
+    window.addEventListener('resize', handleResize)
+})
+onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+})
 
 const handleUserCommand = (command) => {
     switch (command) {

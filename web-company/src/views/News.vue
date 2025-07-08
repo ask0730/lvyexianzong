@@ -10,7 +10,7 @@
                 <div class="search">
                     <el-popover placement="bottom" title="检索结果" width="50%" :visible="visible">
                         <template #reference>
-                            <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入文章关键字" :prefix-icon="Search" type="search" size="large" @input="visible = true" @blur="visible = false" />
+                            <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入文章关键字" :prefix-icon="Search" type="search" size="large" @input="onSearchInput" @blur="visible = false" />
                         </template>
 
                         <div v-if="searchnewslist.length">
@@ -49,9 +49,7 @@
                       }"></div>
                                         <div class="news-content">
                                             <span class="news-title">{{ data.title }}</span>
-                                            <p style="font-size: 12px; color: #888;">
-                                              预计阅读时间：{{ calculateReadTime(data.content) }} 分钟
-                                            </p>
+                                            <p style="font-size: 12px; color: #888;">预计阅读时间：{{ calculateReadTime(data.content) }} 分钟</p>
                                             <div class="bottom">
                                                 <time class="tab-time">{{ formatTime(data.editTime) }}</time>
                                             </div>
@@ -83,6 +81,7 @@ import _ from 'lodash'
 import { formatTime } from '@/utils'
 import bg from '@/assets/newsbg.jpg'
 import Footer from '@/components/Footer.vue'
+import { debounce } from '@/utils/throttleAndDebounce'
 
 const searchText = ref('')
 const visible = ref(false)
@@ -125,12 +124,16 @@ const handleChangepage = (id: number) => {
 const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/banner2.jpg', '/src/assets/news/banner3.jpg'])
 
 function calculateReadTime(text: string, wordsPerMinute = 200) {
-  if (!text) return 1;
-  // 去除 HTML 标签
-  const plainText = text.replace(/<[^>]+>/g, '');
-  const wordCount = plainText.length;
-  return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+    if (!text) return 1
+    // 去除 HTML 标签
+    const plainText = text.replace(/<[^>]+>/g, '')
+    const wordCount = plainText.length
+    return Math.max(1, Math.ceil(wordCount / wordsPerMinute))
 }
+
+const onSearchInput = debounce(() => {
+    visible.value = true
+}, 300)
 </script>
 
 <style scoped lang="scss">
