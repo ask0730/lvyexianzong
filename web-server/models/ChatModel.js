@@ -20,7 +20,7 @@ const chatSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        default: null // 允许为null
     },
     messages: [messageSchema],
     createdAt: {

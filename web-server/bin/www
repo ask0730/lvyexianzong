@@ -23,6 +23,18 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+// 引入 socket.io
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: '*', // 可根据需要限制前端来源
+    methods: ['GET', 'POST']
+  }
+});
+
+// 引入自定义 websocket 事件处理
+require('../websocket')(io);
+
 /**
  * Listen on provided port, on all network interfaces.
  */
