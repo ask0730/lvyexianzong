@@ -49,6 +49,9 @@
                       }"></div>
                                         <div class="news-content">
                                             <span class="news-title">{{ data.title }}</span>
+                                            <p style="font-size: 12px; color: #888;">
+                                              预计阅读时间：{{ calculateReadTime(data.content) }} 分钟
+                                            </p>
                                             <div class="bottom">
                                                 <time class="tab-time">{{ formatTime(data.editTime) }}</time>
                                             </div>
@@ -120,6 +123,14 @@ const handleChangepage = (id: number) => {
 }
 
 const carouselImages = ref(['/src/assets/news/banner1.jpg', '/src/assets/news/banner2.jpg', '/src/assets/news/banner3.jpg'])
+
+function calculateReadTime(text: string, wordsPerMinute = 200) {
+  if (!text) return 1;
+  // 去除 HTML 标签
+  const plainText = text.replace(/<[^>]+>/g, '');
+  const wordCount = plainText.length;
+  return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+}
 </script>
 
 <style scoped lang="scss">
