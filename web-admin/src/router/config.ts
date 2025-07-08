@@ -71,6 +71,14 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/gis',
+    component: () => import('@/views/gis/Gis.vue'),
+    meta: {
+      title: 'GIS地图',
+      requireAdmin: false
+    }
+  },
+  {
     path: '/',
     redirect: '/index',
   },

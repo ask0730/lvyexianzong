@@ -152,7 +152,6 @@ class MenuService {
           icon: 'user-filled',
           title: '用户管理',
           order: 3,
-          requireAdmin: true
         },
         {
           name: 'adduser',
@@ -161,7 +160,6 @@ class MenuService {
           icon: '',
           title: '添加用户',
           order: 1,
-          requireAdmin: true
         },
         {
           name: 'userlist',
@@ -170,7 +168,6 @@ class MenuService {
           icon: '',
           title: '用户列表',
           order: 2,
-          requireAdmin: true
         },
         {
           name: 'news-manage',
@@ -243,7 +240,6 @@ class MenuService {
           icon: 'setting',
           title: '系统管理11',
           order: 6,
-          requireAdmin: true
         },
         {
           name: 'login-attempts',
@@ -252,8 +248,15 @@ class MenuService {
           icon: '',
           title: '登录尝试管理',
           order: 1,
-          requireAdmin: true
-        }
+        },
+        {
+        name: 'gis',
+        path: '/gis',
+        component: '@/views/gis/Gis.vue',
+        icon: 'el-icon-map-location', // 可根据你的UI库选择合适的icon
+        title: 'GIS地图',
+        order: 1,
+      }
       ];
 
       // 先创建父菜单
