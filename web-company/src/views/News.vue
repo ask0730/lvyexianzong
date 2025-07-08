@@ -12,7 +12,6 @@
                         <template #reference>
                             <el-input v-model="searchText" class="w-50 m-2" placeholder="请输入文章关键字" :prefix-icon="Search" type="search" size="large" @input="onSearchInput" @blur="visible = false" />
                         </template>
-
                         <div v-if="searchnewslist.length">
                             <div v-for="data in searchnewslist" :key="data._id" class="search-item" @click="handleChangepage(data._id)">{{ data.title }}</div>
                         </div>
@@ -23,49 +22,69 @@
                 </div>
                 <div class="topnews">
                     <el-row :gutter="20">
-                        <el-col :xs="24" :sm="12" :md="6" v-for="item in topNewsList" :key="item._id">
-                            <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(item._id)">
-                                <div class="image" :style="{
+                        <template v-if="loading">
+                            <el-col :xs="24" :sm="12" :md="6" v-for="n in 4" :key="n">
+                                <el-skeleton :rows="4" animated style="margin-bottom: 20px;" />
+                            </el-col>
+                        </template>
+                        <template v-else>
+                            <el-col :xs="24" :sm="12" :md="6" v-for="item in topNewsList" :key="item._id">
+                                <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(item._id)">
+                                    <div class="image" :style="{
                     backgroundImage: `url(http://localhost:3000${item.cover})`,
                   }"></div>
-                                <div style="padding: 14px">
-                                    <span>{{ item.title }}</span>
-                                    <div class="bottom">
-                                        <time class="time">{{ formatTime(item.editTime) }}</time>
+                                    <div style="padding: 14px">
+                                        <span>{{ item.title }}</span>
+                                        <div class="bottom">
+                                            <time class="time">{{ formatTime(item.editTime) }}</time>
+                                        </div>
                                     </div>
-                                </div>
-                            </el-card>
-                        </el-col>
+                                </el-card>
+                            </el-col>
+                        </template>
                     </el-row>
                 </div>
                 <el-tabs style="margin: 20px" v-model="whichTab" class="demo-tabs">
                     <el-tab-pane :key="item.name" v-for="item in tablist" :label="item.label" :name="item.name">
                         <el-row :gutter="20">
                             <el-col :xs="24" :sm="24" :md="18">
-                                <div v-for="data in tabnews[item.name]" :key="data._id" style="padding: 10px">
-                                    <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)" class="news-card">
-                                        <div class="tab-image" :style="{
+                                <template v-if="loading">
+                                    <div v-for="n in 4" :key="n" style="padding: 10px">
+                                        <el-skeleton :rows="5" animated />
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div v-for="data in tabnews[item.name]" :key="data._id" style="padding: 10px">
+                                        <el-card :body-style="{ padding: '0px' }" shadow="hover" @click="handleChangepage(data._id)" class="news-card">
+                                            <div class="tab-image" :style="{
                         backgroundImage: `url(http://localhost:3000${data.cover})`,
                       }"></div>
-                                        <div class="news-content">
-                                            <span class="news-title">{{ data.title }}</span>
-                                            <p style="font-size: 12px; color: #888;">预计阅读时间：{{ calculateReadTime(data.content) }} 分钟</p>
-                                            <div class="bottom">
-                                                <time class="tab-time">{{ formatTime(data.editTime) }}</time>
+                                            <div class="news-content">
+                                                <span class="news-title">{{ data.title }}</span>
+                                                <p style="font-size: 12px; color: #888;">预计阅读时间：{{ calculateReadTime(data.content) }} 分钟</p>
+                                                <div class="bottom">
+                                                    <time class="tab-time">{{ formatTime(data.editTime) }}</time>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </el-card>
-                                </div>
+                                        </el-card>
+                                    </div>
+                                </template>
                             </el-col>
                             <el-col :xs="24" :sm="24" :md="6">
                                 <el-timeline>
-                                    <el-timeline-item v-for="(data, index) in tabnews[item.name]" :key="index" :timestamp="formatTime(data.editTime)">{{ data.title }}</el-timeline-item>
+                                    <template v-if="loading">
+                                        <el-timeline-item v-for="n in 4" :key="n" :timestamp="''">
+                                            <el-skeleton :rows="1" animated />
+                                        </el-timeline-item>
+                                    </template>
+                                    <template v-else>
+                                        <el-timeline-item v-for="(data, index) in tabnews[item.name]" :key="index" :timestamp="formatTime(data.editTime)">{{ data.title }}</el-timeline-item>
+                                    </template>
                                 </el-timeline>
                             </el-col>
                         </el-row>
                     </el-tab-pane>
                 </el-tabs>
-
                 <el-backtop :visibility-height="100" />
             </div>
         </div>
@@ -87,11 +106,14 @@ const searchText = ref('')
 const visible = ref(false)
 const newlist: any = ref([])
 const whichTab = ref(1)
+const loading = ref(true)
 onMounted(async () => {
+    loading.value = true
     const res = await API.news.list({})
     if (res.code == 0) {
         newlist.value = res.data
     }
+    loading.value = false
 })
 
 const searchnewslist: any = computed(() =>
