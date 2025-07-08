@@ -20,6 +20,7 @@ const webCommentRouter = require('./routes/web/commentRouter');
 const webChatRouter = require('./routes/web/index');
 const webCaptchaRouter = require('./routes/web/captcha');
 const crawlerRouter = require('./routes/crawler/index');
+const compression = require('compression');
 
 var app = express();
 
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(compression());
 
 // 白名单路由，不需要 JWT 验证
 const publicRoutes = [
