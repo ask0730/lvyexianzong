@@ -1,5 +1,4 @@
 const UserModel = require('../../models/UserModel');
-const PasswordEncryption = require('../../utils/PasswordEncryption');
 
 const UserService = {
   getGenderStats: async () => {
@@ -17,7 +16,8 @@ const UserService = {
     const user = await UserModel.findOne({ username });
     if (!user) return [];
     
-    const isMatch = await PasswordEncryption.verify(password, user.password);
+    // 直接比较明文密码
+    const isMatch = password === user.password;
     return isMatch ? [user] : [];
   },
   upload: async ({ _id, username, introduction, gender, avatar }) => {
@@ -47,13 +47,13 @@ const UserService = {
     }
   },
   add: async ({ username, introduction, gender, avatar, password, role }) => {
-    const hashedPassword = await PasswordEncryption.encrypt(password);
+    // 直接使用明文密码
     return UserModel.create({
       username,
       introduction,
       gender,
       avatar,
-      password: hashedPassword,
+      password: password,
       role,
     });
   },

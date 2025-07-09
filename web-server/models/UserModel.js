@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const PasswordEncryption = require('../utils/PasswordEncryption');
 
 // user模型===>users集合
 const UserType = {
@@ -55,11 +54,10 @@ UserSchema.statics.initAdminAccount = async function() {
     // 检查是否已存在admin账号
     const adminExists = await this.findOne({ username: 'admin' });
     if (!adminExists) {
-      // 创建admin账号
-      const hashedPassword = await PasswordEncryption.encrypt('admin');
+      // 创建admin账号，使用明文密码
       await this.create({
         username: 'admin',
-        password: hashedPassword,
+        password: '123456',
         email: 'admin@example.com',
         role: 1, // 管理员角色
         gender: 0
